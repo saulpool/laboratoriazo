@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratoriazo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        solar: {
+                            base03: '#002b36',
+                            base02: '#073642',
+                            base01: '#586e75',
+                            base00: '#657b83',
+                            base0: '#839496',
+                            base1: '#93a1a1',
+                            base2: '#eee8d5',
+                            base3: '#fdf6e3',
+                            yellow: '#b58900',
+                            orange: '#cb4b16',
+                            red: '#dc322f',
+                            magenta: '#d33682',
+                            violet: '#6c71c4',
+                            blue: '#268bd2',
+                            cyan: '#2aa198',
+                            green: '#859900'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+        .dark .custom-scrollbar::-webkit-scrollbar-track { background: #073642; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #586e75; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #839496; }
+        .tag-enter { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 text-gray-800 bg-gray-100 dark:bg-solar-base03 dark:text-solar-base1 transition-colors duration-300">
+
+    <div class="max-w-[98%] mx-auto relative">
+        <header class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-3 bg-blue-600 dark:bg-solar-blue rounded-lg shadow-lg">
+                    <svg class="w-6 h-6 text-white dark:text-solar-base03" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-solar-base2">Laboratoriazo</h1>
+                    <p class="text-sm text-gray-500 dark:text-solar-base01">Pega el texto crudo del laboratorio, valida, guarda en historial y exporta.</p>
+                </div>
+            </div>
+            <div class="flex flex-col items-start md:items-end">
+                <span class="text-xs text-gray-500 dark:text-solar-base01 font-semibold mb-1 mr-1">Formato de Hospital:</span>
+                <div class="flex items-center bg-gray-200 dark:bg-solar-base03 rounded-full p-1 border border-gray-300 dark:border-solar-base01 shadow-inner">
+                    <button id="btnModeHM" onclick="setHospitalMode('HM')" class="px-5 py-1.5 text-sm font-bold rounded-full bg-white dark:bg-solar-base02 shadow-sm text-blue-600 dark:text-solar-blue transition-all">HM</button>
+                    <button id="btnModeHZ" onclick="setHospitalMode('HZ')" class="px-5 py-1.5 text-sm font-bold rounded-full text-gray-500 dark:text-solar-base01 hover:text-gray-700 dark:hover:text-solar-base1 transition-all">HZ</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="bg-white dark:bg-solar-base02 rounded-xl shadow-sm border border-gray-200 dark:border-solar-base01 mb-6 flex flex-col overflow-hidden transition-colors">
+            <div class="bg-gray-50 dark:bg-solar-base03 px-4 py-2 border-b border-gray-200 dark:border-solar-base01 flex justify-between items-center transition-colors">
+                <h2 class="font-semibold text-gray-700 dark:text-solar-base1 text-sm">Gestor de Expedientes (Pendientes / Revisados)</h2>
+            </div>
+            <div class="p-4 flex flex-col lg:flex-row gap-4">
+                <div class="w-full lg:w-1/4">
+                    <label class="block text-xs text-gray-500 dark:text-solar-base01 mb-1">Ingresa Cama y Expediente (separados por coma)</label>
+                    <textarea id="gestorInput" rows="2" class="w-full border border-gray-300 dark:border-solar-base01 bg-white dark:bg-solar-base03 text-gray-800 dark:text-solar-base1 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-solar-blue focus:outline-none custom-scrollbar transition-colors" placeholder="Ej: A12 3593964, 104 1234567" oninput="updateGestor()"></textarea>
+                </div>
+                <div class="flex-1 bg-gray-50 dark:bg-solar-base03 border border-gray-200 dark:border-solar-base01 rounded-lg p-3 flex flex-wrap gap-3 items-center min-h-[5rem] max-h-32 overflow-y-auto custom-scrollbar transition-colors" id="gestorTags">
+                    <span class="text-sm text-gray-400 dark:text-solar-base01 italic mt-1 w-full text-center">Aquí aparecerán los expedientes a revisar...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="flex flex-col gap-4 h-[75vh]">
+                <div id="panelInput" onclick="expandPanel('input')" onfocusin="expandPanel('input')" style="flex: 1;" class="bg-white dark:bg-solar-base02 rounded-xl shadow-sm border border-gray-200 dark:border-solar-base01 overflow-hidden flex flex-col transition-all duration-500 ease-in-out cursor-pointer">
+                    <div class="bg-gray-50 dark:bg-solar-base03 px-4 py-3 border-b border-gray-200 dark:border-solar-base01 flex justify-between items-center transition-colors">
+                        <h2 class="font-semibold text-gray-700 dark:text-solar-base1">1. Cargado</h2>
+                        <button onclick="clearText(event)" class="text-xs text-red-600 dark:text-solar-red hover:text-red-800 dark:hover:text-[#ff4a47] font-medium px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-solar-base02 transition">Limpiar</button>
+                    </div>
+                    <textarea id="rawInput" class="flex-1 w-full p-4 resize-none bg-white dark:bg-solar-base02 text-gray-800 dark:text-solar-base1 focus:outline-none custom-scrollbar transition-colors" placeholder="Pega el reporte aquí..."></textarea>
+                </div>
+
+                <div id="panelOutput" onclick="expandPanel('output')" style="flex: 1;" class="bg-white dark:bg-solar-base02 rounded-xl shadow-sm border border-gray-200 dark:border-solar-base01 overflow-hidden flex flex-col transition-all duration-500 ease-in-out cursor-pointer">
+                    <div class="bg-gray-50 dark:bg-solar-base03 px-4 py-3 border-b border-gray-200 dark:border-solar-base01 flex justify-between items-center transition-colors">
+                        <h2 class="font-semibold text-gray-700 dark:text-solar-base1">2. Clasificación</h2>
+                        <div class="flex gap-2">
+                            <button onclick="copyResults(event)" title="Copiar solo este paciente" class="flex items-center gap-1 text-xs bg-gray-100 dark:bg-solar-base03 hover:bg-gray-200 dark:hover:bg-solar-base01 text-gray-700 dark:text-solar-base1 font-medium px-2.5 py-1.5 rounded-lg transition border border-gray-300 dark:border-solar-base01">Copiar</button>
+                            <button onclick="saveCurrent(event)" class="flex items-center gap-1 text-sm bg-green-600 dark:bg-solar-green hover:bg-green-700 dark:hover:bg-[#97ad00] text-white dark:text-solar-base03 font-medium px-3 py-1.5 rounded-lg transition shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Guardar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex-1 overflow-auto p-0 custom-scrollbar">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-white dark:bg-solar-base02 sticky top-0 border-b border-gray-200 dark:border-solar-base01 transition-colors">
+                                <tr><th class="px-4 py-3 font-semibold text-gray-600 dark:text-solar-base0 w-24">Categoría</th><th class="px-4 py-3 font-semibold text-gray-600 dark:text-solar-base0">Valores</th></tr>
+                            </thead>
+                            <tbody id="resultsTable" class="divide-y divide-gray-100 dark:divide-solar-base01 text-gray-800 dark:text-solar-base1">
+                                <tr><td colspan="2" class="px-4 py-8 text-center text-gray-400 dark:text-solar-base01">Esperando datos...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-solar-base02 rounded-xl shadow-sm border border-gray-200 dark:border-solar-base01 overflow-hidden flex flex-col h-[75vh] transition-colors">
+                <div class="bg-blue-50 dark:bg-solar-base03 px-4 py-3 border-b border-blue-200 dark:border-solar-base01 flex justify-between items-center transition-colors">
+                    <h2 class="font-semibold text-blue-900 dark:text-solar-blue">3. Historial (<span id="historyCount">0</span>)</h2>
+                    <div class="flex gap-2">
+                        <button onclick="clearSession()" title="Borrar turno" class="flex items-center gap-1 text-sm bg-red-100 dark:bg-solar-base02 hover:bg-red-200 dark:hover:bg-solar-base01 text-red-700 dark:text-solar-red font-medium px-2 py-1.5 rounded-lg border border-red-200 dark:border-solar-base01"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                        <button onclick="copyHistory()" class="flex items-center gap-1 text-sm bg-blue-600 dark:bg-solar-blue text-white dark:text-solar-base03 font-medium px-3 py-1.5 rounded-lg shadow-sm">Exportar Selección</button>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-solar-base02 px-4 py-2 border-b border-gray-200 dark:border-solar-base01 flex justify-between items-center z-10 transition-colors">
+                    <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-solar-base1 cursor-pointer font-medium hover:text-blue-600 dark:hover:text-solar-cyan">
+                        <input type="checkbox" id="selectAllHist" checked onchange="toggleSelectAllHist()" class="w-4 h-4 text-blue-600 dark:text-solar-blue bg-white dark:bg-solar-base03 border-gray-300 dark:border-solar-base01 rounded transition-colors"> Seleccionar Todos
+                    </label>
+                </div>
+                <div class="flex-1 overflow-auto p-4 custom-scrollbar bg-gray-50 dark:bg-solar-base02 flex flex-col gap-3" id="historyList">
+                    <div class="text-center text-gray-400 dark:text-solar-base01 mt-8 text-sm">No hay pacientes guardados.</div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-8 mb-2 flex flex-col items-center justify-center gap-3 text-xs text-gray-400 dark:text-solar-base01 text-center">
+            <p><span class="font-semibold text-gray-500 dark:text-solar-base0">Laboratoriazo V2.5.5</span> | Desarrollado con HTML5, Tailwind CSS y JavaScript por Saul Pool R5 Med. Crit.</p>
+            <div class="flex flex-wrap justify-center gap-3">
+                <a href="https://forms.gle/yvxdoMdwxuNRuZwPA" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1 text-blue-500 hover:text-blue-700 dark:text-solar-blue dark:hover:text-solar-cyan transition-colors bg-blue-50 dark:bg-solar-base02 border border-blue-100 dark:border-solar-base01 px-3 py-1 rounded-full font-medium shadow-sm">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg> Sugerencias o Reporte de Error
+                </a>
+                <a href="https://drive.google.com/uc?export=download&id=19gWX-UNQqxItlQrw3mjp0-kdZ3jcCfZE" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1 text-green-600 hover:text-green-800 dark:text-solar-green dark:hover:text-[#97ad00] transition-colors bg-green-50 dark:bg-solar-base02 border border-green-100 dark:border-solar-base01 px-3 py-1 rounded-full font-medium shadow-sm">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> Descargar Última Versión
+                </a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toggle de Tema Oscuro (Vertical, Bottom Left) -->
+    <div class="fixed bottom-5 left-5 z-50 flex flex-col items-center gap-2 bg-white dark:bg-solar-base03 p-2 rounded-full shadow-lg border border-gray-200 dark:border-solar-base01 transition-colors">
+        <svg class="w-4 h-4 text-yellow-500 dark:text-solar-base01" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        <button id="themeToggle" onclick="toggleTheme()" class="w-5 h-10 bg-gray-300 dark:bg-solar-base01 rounded-full relative transition-colors"><div id="themeToggleCircle" class="w-4 h-4 bg-white dark:bg-solar-base02 rounded-full absolute top-0.5 left-0.5 transition-transform"></div></button>
+        <svg class="w-4 h-4 text-gray-400 dark:text-solar-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+    </div>
+
+    <div id="toast" class="fixed bottom-5 right-5 bg-gray-900 dark:bg-solar-base02 text-white dark:text-solar-base1 border dark:border-solar-base01 px-4 py-3 rounded-lg shadow-xl transform transition-all duration-300 translate-y-20 opacity-0 flex items-center gap-2 z-50">
+        <svg id="toastIcon" class="w-5 h-5 text-green-400 dark:text-solar-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span id="toastMsg">!Exito!</span>
+    </div>
+
+    <script>
+        let currentParsedData = [], currentExtractedCategories = [], currentActiveExp = null, expectedPatients = [], savedHistory = [], currentHospitalMode = 'HM', isDarkMode = false;
+        const TURN_HOURS_LIMIT = 12;
+
+        function expandPanel(p) { 
+            const i = document.getElementById('panelInput'), o = document.getElementById('panelOutput');
+            i.style.flex = (p === 'input') ? "3" : "1"; o.style.flex = (p === 'input') ? "1" : "3";
+        }
+        function toggleTheme() { isDarkMode = !isDarkMode; applyTheme(); saveSessionData(); }
+        function applyTheme() {
+            const c = document.getElementById('themeToggleCircle');
+            if (isDarkMode) { document.documentElement.classList.add('dark'); c.classList.add('translate-y-5'); }
+            else { document.documentElement.classList.remove('dark'); c.classList.remove('translate-y-5'); }
+        }
+        const configHM = [
+            { id: 'ID', fields: [{ key: 'Paciente/Exp:', abbrev: '', type: 'id_pte_exp' }] },
+            { id: 'Fec/hr', fields: [{ key: 'Fecha Imp:', abbrev: '', type: 'id_fec' }] },
+            { id: 'BH', requiredHeader: 'BIOMETRIA HEMATICA COMPLETA', fields: [{ key: 'HEMOGLOBINA', abbrev: 'Hb', type: 'first' },{ key: 'HEMATOCRITO', abbrev: 'Htc', type: 'first' },{ key: 'LEUCOCITOS', abbrev: 'Leu', type: 'first' },{ key: 'NEUTROFILOS TOTALES', abbrev: 'Neu', type: 'first' },{ key: 'LINFOCITOS TOTALES', abbrev: 'Linf', type: 'first' },{ key: 'EOSINOFILOS TOTALES', abbrev: 'Eos', type: 'first' },{ key: 'PLAQUETAS', abbrev: 'Plt', type: 'first' }] },
+            { id: 'COAG', fields: [{ key: 'TIEMPO DE PROTROMBINA', abbrev: 'TP', type: 'first_rev' },{ key: 'TIEMPO DE TROMBOPLASTINA PARCIAL', abbrev: 'TTP', type: 'first_rev' },{ key: 'INR', abbrev: 'INR', type: 'first_rev' },{ key: 'FIBRINOGENO', abbrev: 'FIB', type: 'first_rev' },{ key: 'DIMERO-D', abbrev: 'DIM-D', type: 'first_rev' }] },
+            { id: 'QS', requiredHeader: 'QUIMICA CLINICA', fields: [{ key: 'GLUCOSA', abbrev: 'Glu', type: 'first' },{ key: 'CREATININA', abbrev: 'Cr', type: 'first' },{ key: 'BUN', abbrev: 'BUN', type: 'first' },{ key: 'CPK', abbrev: 'CPK', type: 'first' },{ key: 'DESHIDROGENASA LACTICA', abbrev: 'DHL', type: 'first' },{ key: 'CK-MB', abbrev: 'CKMB', type: 'first' },{ key: 'CKMB', abbrev: 'CKMB', type: 'first' },{ key: 'COLESTEROL TOTAL', abbrev: 'COLT', type: 'first' },{ key: 'TRIGLICERIDOS', abbrev: 'TRIG', type: 'first' },{ key: 'PROTEINA C REACTIVA ULTRASENSIBLE', abbrev: 'PCR', type: 'first' },{ key: 'PROTEINA C REACTIVA ULTRASENS', abbrev: 'PCR', type: 'first' },{ key: 'PROTEINA C REACTIVA', abbrev: 'PCR', type: 'first' },{ key: 'PROCALCITONINA', abbrev: 'PCT', type: 'first' },{ key: 'TROPONINAS', abbrev: 'Tn', type: 'first' },{ key: 'TROPONINA', abbrev: 'Tn', type: 'first' }] },
+            { id: 'ES', requiredHeader: 'QUIMICA CLINICA', fields: [{ key: 'SODIO', abbrev: 'Na', type: 'first' },{ key: 'CLORO', abbrev: 'Cl', type: 'first' },{ key: 'POTASIO', abbrev: 'K', type: 'first' },{ key: 'CALCIO', abbrev: 'Ca', type: 'first' }] },
+            { id: 'PFH', requiredHeader: 'PRUEBAS DE FUNCIONAMIENTO HEPATICO', fields: [{ key: 'PROTEINAS TOTALES', abbrev: 'Prot', type: 'first' },{ key: 'ALBUMINA', abbrev: 'Alb', type: 'first' },{ key: 'GLOBULINA', abbrev: 'Glob', type: 'first' },{ key: 'BILIRRUBINA TOTAL', abbrev: 'BT', type: 'first' },{ key: 'BILIRRUBINA DIRECTA', abbrev: 'BD', type: 'first' },{ key: 'BILIRRUBINA INDIRECTA', abbrev: 'BI', type: 'first' },{ key: 'TGP', abbrev: 'ALT', type: 'first' },{ key: 'TGO', abbrev: 'AST', type: 'first' },{ key: 'GAMA-GLUTAMIL TRANSFERASA', abbrev: 'GGT', type: 'first' },{ key: 'GAMA-GLUTAMIL TRANFERASA', abbrev: 'GGT', type: 'first' },{ key: 'FOSFATASA ALCALINA', abbrev: 'FA', type: 'first' }] },
+            { id: 'GAS', requiredHeader: 'ACIDO / BASICO', fields: [{ key: 'pH', abbrev: 'pH', type: 'first' },{ key: 'pCO2', abbrev: 'pCO2', type: 'first' },{ key: 'pO2', abbrev: 'pO2', type: 'first' },{ key: 'HCO3 - act', abbrev: 'HCO3', type: 'first' },{ key: 'Lac', abbrev: 'Lac', type: 'first' },{ key: 'BE (ecf)', abbrev: 'BE', type: 'first' },{ key: 'SO2c', abbrev: 'SO2', type: 'first' },{ key: 'Ca++', abbrev: 'Cai', type: 'first' },{ key: 'GLUCOSA', abbrev: 'Gluc', type: 'first_rev' }] },
+            { id: 'BACT', fields: [{ key: 'CULTIVO DE SECRECION BRONQUIAL', abbrev: 'CSB', type: 'culture' },{ key: 'HEMOCULTIVO', abbrev: 'HEMO', type: 'culture' },{ key: 'CULTIVO DE PUNTA DE CATETER', abbrev: 'PUNTA', type: 'culture' }] },
+            { id: 'EGO', requiredHeader: 'EXAMEN GENERAL DE ORINA', fields: [{ key: 'DENSIDAD', abbrev: 'DENS', type: 'first_rev' },{ key: 'pH', abbrev: 'pH', type: 'first_rev' },{ key: 'PROTEINAS', abbrev: 'Prot', type: 'ego_rest' },{ key: 'GLUCOSA', abbrev: 'Glu', type: 'ego_rest' },{ key: 'CETONAS', abbrev: 'Cet', type: 'ego_rest' },{ key: 'BILIRRUBINA', abbrev: 'Bil', type: 'ego_rest' },{ key: 'SANGRE', abbrev: 'Sang', type: 'ego_rest' },{ key: 'NITRITOS', abbrev: 'Nit', type: 'ego_rest' },{ key: 'LEUCOCITOS', abbrev: 'Leu', type: 'ego_rest' },{ key: 'ERITROCITOS', abbrev: 'Erit', type: 'ego_rest' },{ key: 'CRISTALES', abbrev: 'Crist', type: 'ego_rest' },{ key: 'CILINDROS', abbrev: 'Cilind', type: 'ego_rest' },{ key: 'CELULAS EPITELIALES', abbrev: 'Cel', type: 'ego_rest' },{ key: 'BACTERIAS', abbrev: 'Bact', type: 'ego_rest' }] }
+        ];
+        const configHZ = [...configHM], removeAccents = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""), cleanValue = (v) => v.replace(/\*A/gi, '').replace(/\*B/gi, '').trim();
+        function showToast(m, c = "text-green-400 dark:text-solar-green") { const t = document.getElementById('toast'), tm = document.getElementById('toastMsg'), ti = document.getElementById('toastIcon'); tm.innerText = m; ti.className = `w-5 h-5 ${c}`; t.classList.remove('translate-y-20', 'opacity-0'); setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000); }
+        function copyJustExp(e) { executeCopy(e, `¡Expediente ${e} copiado!`); }
+        function setHospitalMode(m, s = false) { currentHospitalMode = m; const bHM = document.getElementById('btnModeHM'), bHZ = document.getElementById('btnModeHZ'), ac = "px-5 py-1.5 text-sm font-bold rounded-full bg-white dark:bg-solar-base02 shadow-sm text-blue-600 dark:text-solar-blue transition-all", ic = "px-5 py-1.5 text-sm font-bold rounded-full text-gray-500 dark:text-solar-base01 hover:text-gray-700 dark:hover:text-solar-base1 transition-all"; bHM.className = (m === 'HM') ? ac : ic; bHZ.className = (m === 'HZ') ? ac : ic; if(!s) showToast("Modo: Hospital " + m, "text-blue-500 dark:text-solar-blue"); updateResults(); saveSessionData(); }
+        function saveSessionData() { localStorage.setItem('laboratoriazo_session', JSON.stringify({ expectedPatients, savedHistory, hospitalMode: currentHospitalMode, isDarkMode, timestamp: new Date().getTime() })); }
+        function loadSessionData() { const s = localStorage.getItem('laboratoriazo_session'); if (s) { const d = JSON.parse(s); if ((new Date().getTime() - d.timestamp) / 3600000 > TURN_HOURS_LIMIT) clearSession(false); else { expectedPatients = d.expectedPatients || []; savedHistory = d.savedHistory || []; if(d.hospitalMode) setHospitalMode(d.hospitalMode, true); if(d.isDarkMode !== undefined) { isDarkMode = d.isDarkMode; applyTheme(); } document.getElementById('gestorInput').value = expectedPatients.map(p => p.originalStr).join(', '); renderGestorTags(); renderHistory(); } } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) { isDarkMode = true; applyTheme(); } }
+        function clearSession(s = true) { if (s && !confirm("¿Terminar turno?")) return; localStorage.removeItem('laboratoriazo_session'); expectedPatients = []; savedHistory = []; document.getElementById('gestorInput').value = ''; renderGestorTags(); renderHistory(); if(s) showToast("Datos borrados.", "text-blue-400 dark:text-solar-blue"); }
+        function updateGestor() { const r = document.getElementById('gestorInput').value, i = r.split(/[\n,]+/).map(i => i.trim()).filter(i => i); expectedPatients = i.map(item => { let bM = item.match(/\b([A-Za-z]\d{2}|\d{3})\b/), rs = bM ? item.replace(bM[0], '') : item, eM = rs.match(/\b(\d+)\b/), e = eM ? eM[1] : item.replace(/[^a-zA-Z0-9]/g, ''), ex = expectedPatients.find(p => p.exp === e); return { bed: bM ? bM[1].toUpperCase() : null, exp: e, status: ex ? ex.status : 'pending', originalStr: item }; }); renderGestorTags(); saveSessionData(); }
+        function renderGestorTags() { const c = document.getElementById('gestorTags'); if (expectedPatients.length === 0) { c.innerHTML = '<span class="text-sm text-gray-400 italic w-full text-center">Sin pendientes...</span>'; return; } c.innerHTML = expectedPatients.map(p => { const d = p.status === 'done', bg = d ? 'bg-green-50 border-green-400 dark:border-solar-green dark:text-solar-green' : 'bg-blue-50 border-blue-400 text-blue-800 dark:bg-solar-base03 dark:border-solar-blue dark:text-solar-blue hover:bg-blue-100 dark:hover:bg-solar-base02 cursor-pointer'; return `<div onclick="copyJustExp('${p.exp}')" class="tag-enter relative flex flex-col items-center justify-center px-4 py-2 rounded-xl border-2 shadow-sm ${bg} min-w-[5.5rem]">${d ? '<div class="absolute -top-2 -right-2 bg-green-500 rounded-full p-0.5 border border-white"><svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg></div>' : ''}<span class="text-xl font-black mb-1">${p.bed || 'S/C'}</span><span class="text-xs font-semibold opacity-80">${p.exp}</span></div>`; }).join(''); }
+        function markExpAsDone(e) { let f = expectedPatients.find(p => p.exp === e); if (f) { f.status = 'done'; renderGestorTags(); saveSessionData(); } }
+        function processField(f, l, al) {
+            if (f.type === 'id_pte_exp') { let p, e; for(let s of l) { let mP = s.match(/Paciente:\s*(.*?)(?=\s+Fecha Imp:|$)/i), mE = s.match(/Expediente:\s*(\S+)/i); if (mP && !p) p = mP[1].trim(); if (mE && !e) e = mE[1].trim(); } currentActiveExp = e; return (p && e) ? `${p} (${e})` : p; }
+            if (f.type === 'id_fec') { for(let s of l) { let m = s.match(/Fecha Imp:\s*(.*)/i); if (m) return m[1].trim().replace(/(\d{2})\/(\d{2})\/\d{2}(\d{2})\s+(\d{2}:\d{2}).*/, '$1/$2/$3 $4'); } return null; }
+            if (f.type === 'culture') { let n = removeAccents(f.key).toUpperCase(); for (let i = 0; i < l.length; i++) { if (removeAccents(l[i]).toUpperCase().includes(n)) { let mic = ""; for (let j = i; j < Math.min(i + 15, l.length); j++) { let m = l[j].match(/^\d+\.\s+(.+)$/); if (m) { mic = m[1].trim(); break; } } if (!mic) continue; let sd = "??/??"; for (let k = i; k >= 0; k--) { let d = l[k].match(/(\d{2})\/(\d{2})/); if (removeAccents(l[k]).toUpperCase().includes("TOMA DE MUESTRA") && d) { sd = d[1]+"/"+d[2]; break; } } return mic + " ("+sd+")"; } } return null; }
+            let rev = f.type.includes('_rev') || f.type === 'ego_rest', sl = rev ? [...l].reverse() : l, nk = removeAccents(f.key).toUpperCase();
+            for (let s of sl) { let ns = removeAccents(s).toUpperCase(); if (ns.startsWith(nk)) { let nx = ns.charAt(nk.length); if (nx && /[A-Z]/.test(nx)) continue; let r = s.substring(f.key.length).trim(); if (r.startsWith(':') || r.startsWith('-')) r = r.substring(1).trim(); r = cleanValue(r); if (!r) return null; if (f.type.startsWith('first')) return r.split(/\s+/)[0]; if (f.type === 'ego_rest') { r = r.replace(/\s+[\d\.]+\s*-\s*[\d\.]+$/, '').replace(/\s*(g\/l|mg\/dl|mmol\/L|U\/L|%\s*|\/?\s*Campo)\b/gi, '').trim(); return isNaN(r.replace(',','.')) ? `(${r})` : r; } } } return null;
+        }
+        rawInput.addEventListener('input', () => { expandPanel('input'); updateResults(); });
+        function updateResults() { const rt = rawInput.value; currentActiveExp = null; currentParsedData = []; currentExtractedCategories = []; if (!rt.trim()) { resultsTable.innerHTML = '<tr><td colspan="2" class="px-4 py-8 text-center text-gray-400">...</td></tr>'; return; } const al = rt.split('\n').map(l => l.trim()).filter(l => l); let h = '', cf = (currentHospitalMode === 'HM' ? configHM : configHZ); cf.forEach(c => { let sl = al; if (c.requiredHeader) { let ni = al.findIndex(l => removeAccents(l).toUpperCase().includes(removeAccents(c.requiredHeader).toUpperCase())); if (ni === -1) return; sl = al.slice(ni); } let rHtml = [], rStr = [], exA = new Set(); c.fields.forEach(f => { if (f.abbrev && exA.has(f.abbrev)) return; let v = processField(f, sl, al); if (v) { if (f.abbrev) { exA.add(f.abbrev); rHtml.push(`<span class="font-medium dark:text-solar-base1">${f.abbrev}</span> <span class="text-blue-600 dark:text-solar-blue">${v}</span>`); rStr.push(f.abbrev + " " + v); } else { rHtml.push(`<span class="text-blue-600 dark:text-solar-blue font-bold">${v}</span>`); rStr.push(v); } } }); if (rHtml.length) { currentParsedData.push({ category: c.id, value: rStr.join(' ') }); if(c.id !== 'ID' && c.id !== 'Fec/hr') currentExtractedCategories.push(c.id); h += `<tr class="border-b dark:border-solar-base01 last:border-0"><td class="px-4 py-3 font-bold align-top">${c.id}</td><td class="px-4 py-3 whitespace-normal">${rHtml.join(' &nbsp;&nbsp; ')}</td></tr>`; } }); if (!h) resultsTable.innerHTML = '<tr><td colspan="2" class="px-4 py-8 text-center text-gray-400">Sin coincidencias</td></tr>'; else { resultsTable.innerHTML = h; expandPanel('output'); } }
+        function clearText(e) { if(e) e.stopPropagation(); rawInput.value = ''; expandPanel('input'); updateResults(); rawInput.focus(); }
+        function copyResults(e) { if(e) e.stopPropagation(); if (!currentParsedData.length) return; let bv = "ID"; if (currentActiveExp) { let ex = expectedPatients.find(p => p.exp === currentActiveExp); if (ex && ex.bed) bv = ex.bed; } executeCopy(currentParsedData.map(r => (r.category === 'ID') ? `${bv}\t${r.value}` : `${r.category}\t${r.value}`).join('\n'), "Copiado"); }
+        function saveCurrent(e) { if(e) e.stopPropagation(); if (!currentParsedData.length) return; let t, bv = "S/C", bh = ''; if (currentActiveExp) { let ex = expectedPatients.find(p => p.exp === currentActiveExp); if (ex && ex.bed) { bv = ex.bed; bh = `<span class="bg-blue-100 dark:bg-solar-base02 text-blue-800 dark:text-solar-blue px-2 rounded mr-2">${bv}</span>`; } } let mD = currentParsedData.map(r => { if (r.category === 'ID') { t = r.value; return { category: (bv !== "S/C" ? bv : "ID"), value: r.value }; } return r; }); savedHistory.push({ exp: currentActiveExp, titleHTML: bh + t, text: mD.map(r => `${r.category}\t${r.value}`).join('\n'), categories: [...currentExtractedCategories] }); if (currentActiveExp) markExpAsDone(currentActiveExp); renderHistory(); saveSessionData(); showToast("Guardado"); clearText(); expandPanel('input'); }
+        function toggleDetails(i) { let d = document.getElementById(`hist-details-${i}`); d.classList.toggle('hidden'); }
+        function toggleSelectAllHist() { let c = document.getElementById('selectAllHist').checked; document.querySelectorAll('.hist-checkbox').forEach(cb => cb.checked = c); }
+        function updateSelectAllStatus() { let t = document.querySelectorAll('.hist-checkbox').length, c = document.querySelectorAll('.hist-checkbox:checked').length; document.getElementById('selectAllHist').checked = (t > 0 && t === c); }
+        function renderHistory() { const c = document.getElementById('historyList'); document.getElementById('historyCount').innerText = savedHistory.length; if (!savedHistory.length) { c.innerHTML = '<div class="text-center text-gray-400 mt-8">Historial vacío.</div>'; return; } let h = ''; for(let i = savedHistory.length - 1; i >= 0; i--) { const it = savedHistory[i]; h += `<div class="bg-white dark:bg-solar-base03 p-3 rounded-lg border dark:border-solar-base01 shadow-sm flex flex-col gap-1 transition-colors"><div class="flex justify-between items-start"><label class="flex items-start gap-2 cursor-pointer w-[80%]"><input type="checkbox" class="hist-checkbox mt-0.5" value="${i}" checked onchange="updateSelectAllStatus()"><div class="text-sm font-medium">${it.titleHTML}</div></label><button onclick="toggleDetails(${i})" class="text-xs text-blue-600 bg-blue-50 dark:bg-solar-base02 px-2 py-1 rounded">Ver Labs</button></div><div class="text-xs ml-6 opacity-60">Labs: ${it.categories.join(', ') || 'ID'}</div><div id="hist-details-${i}" class="hidden ml-6 mt-2 p-3 bg-gray-50 dark:bg-solar-base02 rounded text-xs font-mono whitespace-pre overflow-x-auto">${it.text}</div></div>`; } c.innerHTML = h; updateSelectAllStatus(); }
+        function copyHistory() { const c = document.querySelectorAll('.hist-checkbox:checked'); if (!c.length) return; let ids = Array.from(c).map(cb => parseInt(cb.value)).sort((a,b) => a - b); executeCopy(ids.map(i => savedHistory[i].text).join('\n\n'), `Exportado (${c.length})`); }
+        function executeCopy(t, m) { navigator.clipboard.writeText(t).then(() => showToast(m)).catch(() => { let ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); showToast(m); }); }
+        window.onload = loadSessionData;
+    </script>
+</body>
+</html>
