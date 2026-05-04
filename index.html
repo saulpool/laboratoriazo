@@ -156,7 +156,19 @@
                 { id: 'EGO', req: 'EXAMEN GENERAL DE ORINA', fields: [{ k: 'DENSIDAD', a: 'DENS', t: 'num_rev' },{ k: 'pH', a: 'pH', t: 'num_rev' },{ k: 'PROTEINAS', a: 'Prot', t: 'ego' },{ k: 'GLUCOSA', a: 'Glu', t: 'ego' },{ k: 'CETONAS', a: 'Cet', t: 'ego' },{ k: 'BILIRRUBINA', a: 'Bil', t: 'ego' },{ k: 'SANGRE', a: 'Sang', t: 'ego' },{ k: 'NITRITOS', a: 'Nit', t: 'ego' },{ k: 'LEUCOCITOS', a: 'Leu', t: 'ego' },{ k: 'ERITROCITOS', a: 'Erit', t: 'ego' },{ k: 'CRISTALES', a: 'Crist', t: 'ego' },{ k: 'CILINDROS', a: 'Cilind', t: 'ego' },{ k: 'CELULAS EPITELIALES', a: 'Cel', t: 'ego' },{ k: 'BACTERIAS', a: 'Bact', t: 'ego' }] }
             ]
         };
-        CONFIG.HZ = [...CONFIG.HM]; CONFIG.HU = [...CONFIG.HM];
+        CONFIG.HZ = [
+                    { id: 'ID', fields: [{ k: 'PACIENTE :', t: 'id_pte_exp' }] },
+                    { id: 'Fec/hr', fields: [{ k: 'REPORTADA :', t: 'id_fec' }] },
+                    { id: 'BH', fields: [{ k: 'HEMOGLOBINA', a: 'Hb', t: 'num' },{ k: 'HEMATOCRITO', a: 'Htc', t: 'num' },{ k: 'LEUCOCITOS', a: 'Leu', t: 'num' },{ k: 'NEUTROFILOS ABSOLUTOS', a: 'Neu', t: 'num' },{ k: 'LINFOCITOS ABSOLUTOS', a: 'Linf', t: 'num' },{ k: 'PLAQUETAS', a: 'Plt', t: 'num' }, { k: 'VCM', a: 'VCM', t: 'num' }, { k: 'MCH', a: 'MCH', t: 'num' }, { k: 'MCHC', a: 'MCHC', t: 'num' }, { k: 'RDW-CV', a: 'RDW', t: 'num' }] },
+                    { id: 'COAG', fields: [{ k: 'TIEMPO DE PROTROMBINA', a: 'TP', t: 'num' },{ k: 'TIEMPO PARCIAL DE TROMBOPLASTINA ACTIVADA', a: 'TTP', t: 'num' },{ k: 'INR', a: 'INR', t: 'num' },{ k: 'FIBRINOGENO', a: 'FIB', t: 'num' }] },
+                    { id: 'QS', fields: [{ k: 'GLUCOSA', a: 'Glu', t: 'num' },{ k: 'UREA', a: 'Urea', t: 'num' },{ k: 'NITROGENO DE LA UREA', a: 'BUN', t: 'num' },{ k: 'CREATININA', a: 'Cr', t: 'num' },{ k: 'DESHIDROGENASA LACTICA (DHL)', a: 'DHL', t: 'num' },{ k: 'COLESTEROL TOTAL', a: 'COLT', t: 'num' },{ k: 'TRIGLICERIDOS', a: 'TRIG', t: 'num' }, { k: 'HIERRO', a: 'Fe', t: 'num' }] },
+                    { id: 'MARC', fields: [{ k: 'PROTEINA C REACTIVA INFECCIOSA', a: 'PCR', t: 'num' }] },
+                    { id: 'ES', fields: [{ k: 'SODIO', a: 'Na', t: 'num' },{ k: 'CLORO', a: 'Cl', t: 'num' },{ k: 'POTASIO', a: 'K', t: 'num' },{ k: 'CALCIO', a: 'Ca', t: 'num' },{ k: 'MAGNESIO', a: 'Mg', t: 'num' }, { k: 'FOSFORO', a: 'P', t: 'num' }] },
+                    { id: 'PFH', fields: [{ k: 'PROTEINAS TOTALES', a: 'Prot', t: 'num' },{ k: 'ALBUMINA', a: 'Alb', t: 'num' },{ k: 'GLOBULINAS', a: 'Glob', t: 'num' },{ k: 'BILIRRUBINA TOTAL', a: 'BT', t: 'num' },{ k: 'BILIRRUBINA DIRECTA', a: 'BD', t: 'num' },{ k: 'BILIRRUBINA INDIRECTA', a: 'BI', t: 'num' },{ k: 'ASPARTATO AMINOTRANSFERASA(AST)', a: 'AST', t: 'num' },{ k: 'ALANINO AMINOTRANSFERASA(ALT)', a: 'ALT', t: 'num' },{ k: 'FOSFATASA ALCALINA', a: 'FA', t: 'num' }] },
+                    { id: 'GAS', fields: [{ k: 'pH', a: 'pH', t: 'num' },{ k: 'PCO2', a: 'pCO2', t: 'num' },{ k: 'PO2', a: 'pO2', t: 'num' },{ k: 'HCO3', a: 'HCO3', t: 'num' },{ k: 'LACTATO', a: 'Lac', t: 'num' },{ k: 'EXCESO DE BASE', a: 'BE', t: 'num' },{ k: 'SATURACION DE OXIGENO (SAT DE O2)', a: 'SO2', t: 'num' },{ k: 'CALCIO IONICO', a: 'Cai', t: 'num' }] },
+                    { id: 'BACT', fields: [{ k: 'TINCION DE GRAM', a: 'GRAM', t: 'culture' },{ k: 'CULTIVO DE SECRECION BRONQUIAL', a: 'CSB', t: 'culture' },{ k: 'HEMOCULTIVO', a: 'HEMO', t: 'culture' },{ k: 'UROCULTIVO', a: 'URO', t: 'culture' }] }
+        ];            
+        CONFIG.HU = [...CONFIG.HM];
 
         const UTILS = {
             rm: s => s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
@@ -246,18 +258,27 @@
                     }
                 });
             },
-            xFld: (f, srch, all, usd) => {
+        xFld: (f, srch, all, usd) => {
                 if(f.t === 'id_pte_exp') {
                     let p, e;
                     for(let o of all) {
-                        if(!p && /Paciente:\s*(.*?)(?=\s+Fecha Imp:|$)/i.test(o.r)) { p=RegExp.$1.trim(); usd.add(o.r); }
-                        if(!e && /Expediente:\s*(\S+)/i.test(o.r)) { e=RegExp.$1.trim(); usd.add(o.r); }
+                        if(STATE.mode === 'HM') {
+                            if(!p && /Paciente:\s*(.*?)(?=\s+Fecha Imp:|$)/i.test(o.r)) { p=RegExp.$1.trim(); usd.add(o.r); }
+                            if(!e && /Expediente:\s*(\S+)/i.test(o.r)) { e=RegExp.$1.trim(); usd.add(o.r); }
+                        } else if(STATE.mode === 'HZ') {
+                            if(!p && /PACIENTE\s*:\s*(.*?)(?=\s+RECOLECTADA|$)/i.test(o.r)) { p=RegExp.$1.trim(); usd.add(o.r); }
+                            if(!e && /:\s*(\d+)\s*No\.\s*PACIENTE/i.test(o.r)) { e=RegExp.$1.trim(); usd.add(o.r); }
+                        }
                     }
                     if(!p && !e) return null;
                     return { v: `${p||'Paciente'} (${e||'S/E'})`, exp: e||null, isAb: false };
                 }
                 if(f.t === 'id_fec') {
-                    for(let o of all) { if(/Fecha Imp:\s*(.*)/i.test(o.r)) { usd.add(o.r); return { v: RegExp.$1.trim().replace(/(\d{2})[\/\-](\d{2})[\/\-](\d{2,4})\s+(\d{2}:\d{2}).*/, '$1/$2/$3 $4'), isAb: false }; } } return null;
+                    for(let o of all) { 
+                        if(STATE.mode === 'HM' && /Fecha Imp:\s*(.*)/i.test(o.r)) { usd.add(o.r); return { v: RegExp.$1.trim().replace(/(\d{2})[\/\-](\d{2})[\/\-](\d{2,4})\s+(\d{2}:\d{2}).*/, '$1/$2/$3 $4'), isAb: false }; }
+                        if(STATE.mode === 'HZ' && /REPORTADA\s*:\s*(.*)/i.test(o.r)) { usd.add(o.r); return { v: RegExp.$1.trim().replace(/(\d{2})[\/\-](\d{2})[\/\-](\d{2,4})\s+(\d{2}:\d{2}).*/, '$1/$2/$3 $4'), isAb: false }; }
+                    } 
+                    return null;
                 }
                 let tName = UTILS.rm(f.k).toUpperCase();
                 if(f.t === 'culture') {
@@ -281,19 +302,61 @@
                     }
                     return null;
                 }
+                
                 let list = f.t.includes('_rev') ? [...srch].reverse() : srch;
                 for(let o of list) {
                     if(usd.has(o.r)) continue;
-                    if(o.c.startsWith(tName)) {
-                        let nx = o.c.charAt(tName.length); if(nx && /[A-Z]/.test(nx) && nx!=='+') continue;
-                        let rOL = o.r.substring(f.k.length).replace(/^[:\-]/,'').trim();
-                        if(!UTILS.cln(rOL)) continue;
-                        usd.add(o.r); let rng = UTILS.rgx(o.r), pV = f.t.startsWith('num') ? UTILS.cln(rOL).split(/\s+/)[0] : (isNaN(rOL.replace(/\s*(g\/l|mg\/dl|mmol\/L|U\/L|%\s*|\/?\s*Campo)\b/gi,'').trim().replace(',','.')) ? `(${rOL.replace(/\s*(g\/l|mg\/dl|mmol\/L|U\/L|%\s*|\/?\s*Campo)\b/gi,'').trim()})` : rOL.replace(/\s*(g\/l|mg\/dl|mmol\/L|U\/L|%\s*|\/?\s*Campo)\b/gi,'').trim());
-                        return { v: pV, rL: o.r, isAb: rng.isAb, u: rng.u, rMin: rng.rMin, rMax: rng.rMax };
+                    
+                    let matchHZ = STATE.mode === 'HZ' && o.c.includes(tName);
+                    let matchHM = STATE.mode !== 'HZ' && o.c.startsWith(tName);
+
+                    if(matchHZ || matchHM) {
+                        if(STATE.mode === 'HZ') {
+                            if(tName === 'LEUCOCITOS' && o.c.includes('ABSOLUTOS')) continue;
+                            if(tName === 'NEUTROFILOS' && o.c.includes('ABSOLUTOS')) continue;
+                            
+                            usd.add(o.r);
+                            let cleanLine = o.r.replace(/[▲▼]/g, '').trim();
+                            let idx = cleanLine.toUpperCase().lastIndexOf(tName);
+                            let prefix = cleanLine.substring(0, idx).trim();
+                            let pV = '';
+                            
+                            // Heurística de separación para números fusionados en HZ
+                            let dashMatch = prefix.match(/-\s*([\d\.]+)\s*%?$/) || prefix.match(/±\s*([\d\.]+)\s*%?$/);
+                            if(dashMatch) {
+                                let glued = dashMatch[1];
+                                let m2 = glued.match(/^(\d+\.\d+)([\-\+]?\d+\.\d+)$/);
+                                let m3 = glued.match(/^(\d+)([\-\+]\d+(\.\d+)?)$/);
+                                
+                                if(m2) { pV = m2[2]; }
+                                else if(m3) { pV = m3[2]; }
+                                else {
+                                    // Separador seguro basado en límites máximos predecibles de HZ
+                                    if(tName.includes('REACTIVA')) pV = glued.substring(1);
+                                    else if(tName.includes('TRIGLICERIDOS') || tName.includes('LACTICA') || tName.includes('COLESTEROL') || tName.includes('ALCALINA')) pV = glued.substring(3);
+                                    else if(tName.includes('UREA') || tName.includes('AMINOTRANSFERASA') || tName.includes('GAP')) pV = glued.substring(2);
+                                    else pV = glued.substring(Math.floor(glued.length / 2));
+                                }
+                            } else {
+                                let lastNum = prefix.match(/([\-\+]?[\d\.]+)\s*%?$/);
+                                if(lastNum) pV = lastNum[1];
+                            }
+                            
+                            pV = pV.replace(/^\./, '0.');
+                            let isAb = o.r.includes('▲') || o.r.includes('▼');
+                            return { v: pV || prefix, rL: o.r, isAb: isAb, u: '', rMin: null, rMax: null };
+
+                        } else {
+                            let nx = o.c.charAt(tName.length); if(nx && /[A-Z]/.test(nx) && nx!=='+') continue;
+                            let rOL = o.r.substring(f.k.length).replace(/^[:\-]/,'').trim();
+                            if(!UTILS.cln(rOL)) continue;
+                            usd.add(o.r); let rng = UTILS.rgx(o.r), pV = f.t.startsWith('num') ? UTILS.cln(rOL).split(/\s+/)[0] : (isNaN(rOL.replace(/\s*(g\/l|mg\/dl|mmol\/L|U\/L|%\s*|\/?\s*Campo)\b/gi,'').trim().replace(',','.')) ? `(${rOL.replace(/\s*(g\/l|mg\/dl|mmol\/L|U\/L|%\s*|\/?\s*Campo)\b/gi,'').trim()})` : rOL.replace(/\s*(g\/l|mg\/dl|mmol\/L|U\/L|%\s*|\/?\s*Campo)\b/gi,'').trim());
+                            return { v: pV, rL: o.r, isAb: rng.isAb, u: rng.u, rMin: rng.rMin, rMax: rng.rMax };
+                        }
                     }
                 }
                 return null;
-            }
+            }    
         };
 
         const RENDER = {
