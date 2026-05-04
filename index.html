@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratoriazo V4.0.3</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registrado con éxito.', reg))
+                    .catch(err => console.error('Error al registrar el Service Worker.', err));
+            });
+        }
+    </script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { solar: { base03: '#0a192f', base02: '#112240', base01: '#233554', base00: '#475569', base0: '#8892b0', base1: '#ccd6f6', base2: '#e6f1ff', base3: '#ffffff', yellow: '#fbbf24', orange: '#fb923c', red: '#f87171', magenta: '#c084fc', violet: '#a78bfa', blue: '#60a5fa', cyan: '#22d3ee', green: '#34d399' } } } }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+        .dark .custom-scrollbar::-webkit-scrollbar-track { background: #073642; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #586e75; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #839496; }
+        .tag-enter { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 text-gray-800 bg-gray-100 dark:bg-solar-base03 dark:text-solar-base1 transition-colors duration-300">
+    <div class="max-w-[98%] mx-auto relative">
+        <!-- HEADER -->
+        <header class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-3 bg-blue-600 dark:bg-solar-blue rounded-lg shadow-lg">
+                    <svg class="w-6 h-6 text-white dark:text-solar-base03" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-solar-base2">Laboratoriazo</h1>
+                    <p class="text-sm text-gray-500 dark:text-solar-base0">Pega el texto crudo del laboratorio, valida, guarda en historial y exporta.</p>
+                </div>
+            </div>
+            <div class="flex flex-col items-start md:items-end">
+                <span class="text-xs text-gray-500 dark:text-solar-base0 font-semibold mb-1 mr-1">Formato de Hospital:</span>
+                <div class="flex items-center bg-gray-200 dark:bg-solar-base03 rounded-full p-1 border border-gray-300 dark:border-solar-base01 shadow-inner" id="modeContainer">
+                    <button id="btnModeHM" onclick="APP.setMode('HM')" class="px-5 py-1.5 text-sm font-bold rounded-full bg-white dark:bg-solar-base02 shadow-sm text-blue-600 dark:text-solar-blue transition-all">HM</button>
+                    <button id="btnModeHZ" onclick="APP.setMode('HZ')" class="px-5 py-1.5 text-sm font-bold rounded-full text-gray-500 dark:text-solar-base0 hover:text-gray-700 dark:hover:text-solar-base1 transition-all">HZ</button>
+                    <button id="btnModeHU" onclick="APP.setMode('HU')" class="px-5 py-1.5 text-sm font-bold rounded-full text-gray-500 dark:text-solar-base0 hover:text-gray-700 dark:hover:text-solar-base1 transition-all">HU</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- GESTOR -->
+        <div class="bg-white dark:bg-solar-base02 rounded-xl shadow-sm border border-gray-200 dark:border-solar-base01 mb-6 flex flex-col overflow-hidden transition-colors">
+            <div class="bg-blue-50 dark:bg-solar-base03 px-4 py-2 border-b border-blue-200 dark:border-solar-base01"><h2 class="font-semibold text-blue-900 dark:text-solar-blue text-sm">Gestor de Expedientes</h2></div>
+            <div class="p-4 flex flex-col lg:flex-row gap-4">
+                <div class="w-full lg:w-1/4">
+                    <label class="block text-xs text-gray-500 dark:text-solar-base0 mb-1">Ingresa Cama y Expediente, separados por Enter</label>
+                    <textarea id="gestorInput" oninput="APP.updateGestor()" rows="2" class="w-full border border-gray-300 dark:border-solar-base01 bg-white dark:bg-solar-base03 text-gray-800 dark:text-solar-base1 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none custom-scrollbar transition-colors" placeholder="Ej: A12 3593964&#10;104 1234567"></textarea>
+                </div>
+                <div class="flex-1 bg-gray-50 dark:bg-solar-base03 border border-gray-200 dark:border-solar-base01 rounded-lg p-3 flex flex-wrap gap-3 items-center min-h-[5rem] max-h-32 overflow-y-auto custom-scrollbar transition-colors" id="gestorTags"></div>
+            </div>
+        </div>
+
+        <div class="relative">
+            <!-- OVERLAY DE DESARROLLO -->
+            <div id="devOverlay" class="hidden absolute inset-0 z-50 bg-white/60 dark:bg-solar-base03/60 backdrop-blur-[2px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-400 dark:border-solar-base01 transition-all duration-300">
+                <div class="bg-white dark:bg-solar-base02 p-6 rounded-2xl shadow-xl flex flex-col items-center text-center max-w-sm border border-gray-200 dark:border-solar-base01">
+                    <svg class="w-12 h-12 text-blue-500 dark:text-solar-blue mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-solar-base2 mb-2">Modalidad en Desarrollo</h2><p class="text-sm text-gray-500 dark:text-solar-base0">Por favor, utiliza el formato HM.</p>
+                </div>
+            </div>
+
+            <!-- MAIN GRID -->
+            <div id="mainGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-6 transition-all duration-500">
+                <div id="leftCol" class="flex flex-col gap-4 h-[75vh] lg:col-span-1 transition-all duration-500">
+                    <div id="panelInput" onclick="APP.expandLeft('input')" style="flex: 1;" class="bg-white dark:bg-solar-base02 rounded-xl shadow-sm border border-gray-200 dark:border-solar-base01 overflow-hidden flex flex-col cursor-pointer transition-all">
+                        <div class="bg-blue-50 dark:bg-solar-base03 px-4 py-3 border-b border-blue-200 dark:border-solar-base01 flex justify-between items-center"><h2 class="font-semibold text-blue-900 dark:text-solar-blue">1. Cargado</h2><button onclick="APP.clearInput(event)" title="Limpiar reporte" class="text-red-700 dark:text-solar-red hover:bg-red-100 dark:hover:bg-solar-base02 px-2 py-1.5 rounded-lg border border-red-200 dark:border-solar-base01"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div>
+                        <textarea id="rawInput" class="flex-1 w-full p-4 resize-none bg-transparent text-gray-800 dark:text-solar-base1 focus:outline-none custom-scrollbar" placeholder="Pega el reporte aquí... (Usa 'OTROSLABS' al inicio para extraer todo)"></textarea>
+                    </div>
+
+                    <div id="panelOutput" onclick="APP.expandLeft('output')" style="flex: 1;" class="bg-white dark:bg-solar-base02 rounded-xl shadow-sm border border-gray-200 dark:border-solar-base01 overflow-hidden flex flex-col cursor-pointer transition-all">
+                        <div class="bg-blue-50 dark:bg-solar-base03 px-4 py-3 border-b border-blue-200 dark:border-solar-base01 flex justify-between items-center">
+                            <h2 id="panelOutputTitle" class="font-semibold text-blue-900 dark:text-solar-blue">2. Clasificación</h2>
+                            <div class="flex items-center gap-2 justify-end">
+                                <button id="btnResaltar" onclick="APP.toggleCritical()" class="px-2 py-1.5 rounded-lg border text-sm font-medium transition-colors shadow-sm">Resaltar Labs</button>
+                                <button onclick="APP.copyResults(event)" class="px-2.5 py-1.5 rounded-lg text-xs bg-gray-100 dark:bg-solar-base03 hover:bg-gray-200 dark:hover:bg-solar-base01 border dark:border-solar-base01 text-gray-700 dark:text-solar-base1 transition font-medium">Copiar</button>
+                                <button onclick="APP.saveResults(event)" class="flex items-center gap-1 text-sm bg-green-600 dark:bg-solar-green hover:bg-green-700 dark:hover:bg-[#97ad00] text-white dark:text-solar-base03 font-medium px-3 py-1.5 rounded-lg shadow-sm"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Guardar</button>
+                            </div>
+                        </div>
+                        <div class="flex-1 overflow-auto p-0 custom-scrollbar"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-white dark:bg-solar-base02 sticky top-0 border-b border-gray-200 dark:border-solar-base01"><tr><th class="px-4 py-3 font-semibold text-gray-600 dark:text-solar-base0 w-24">Categoría</th><th class="px-4 py-3 font-semibold text-gray-600 dark:text-solar-base0">Valores</th></tr></thead><tbody id="resultsTable" class="divide-y divide-gray-100 dark:divide-solar-base01"><tr><td colspan="2" class="px-4 py-8 text-center text-gray-400 dark:text-solar-base0">Esperando datos...</td></tr></tbody></table></div>
+                    </div>
+                </div>
+
+                <div id="rightCol" class="flex flex-col gap-4 h-[75vh] lg:col-span-1 transition-all duration-500">
+                    <div id="panelHistorial" onclick="APP.expandRight('historial')" style="flex: 1;" class="bg-white dark:bg-solar-base02 rounded-xl shadow-sm border border-gray-200 dark:border-solar-base01 overflow-hidden flex flex-col cursor-pointer transition-all">
+                        <div class="bg-blue-50 dark:bg-solar-base03 px-4 py-3 border-b border-blue-200 dark:border-solar-base01 flex justify-between items-center">
+                            <h2 class="font-semibold text-blue-900 dark:text-solar-blue">3. Historial (<span id="historyCount">0</span>)</h2>
+                            <div class="flex items-center gap-2">
+                                <button id="btnTendencias" onclick="APP.toggleChart(event)" class="px-2.5 py-1.5 rounded-lg text-sm border font-medium transition-colors shadow-sm">Tendencias</button>
+                                <button onclick="APP.clearSession(event)" title="Borrar turno" class="text-red-700 dark:text-solar-red bg-red-100 dark:bg-solar-base02 hover:bg-red-200 dark:hover:bg-solar-base01 px-2 py-1.5 rounded-lg border border-red-200 dark:border-solar-base01"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                                <button onclick="APP.copyHistory(event)" class="text-sm bg-blue-600 dark:bg-solar-blue text-white dark:text-solar-base03 font-medium px-3 py-1.5 rounded-lg shadow-sm">Exportar</button>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-solar-base02 px-4 py-2 border-b border-gray-200 dark:border-solar-base01 z-10"><label class="flex items-center gap-2 text-sm text-gray-700 dark:text-solar-base1 cursor-pointer font-medium hover:text-blue-600 dark:hover:text-solar-cyan"><input type="checkbox" id="selectAllHist" checked onchange="APP.toggleSelectAll()" class="w-4 h-4 accent-blue-600 dark:accent-solar-blue cursor-pointer"> Seleccionar Todos</label></div>
+                        <div class="flex-1 overflow-auto p-4 custom-scrollbar bg-gray-50 dark:bg-solar-base02 flex flex-col gap-3" id="historyList"></div>
+                    </div>
+
+                    <div id="panelChart" onclick="APP.expandRight('chart')" style="display: none; flex: 1;" class="bg-white dark:bg-solar-base02 rounded-xl shadow-sm border border-gray-200 dark:border-solar-base01 overflow-hidden flex flex-col cursor-pointer transition-all">
+                        <div class="bg-indigo-50 dark:bg-solar-base03 px-4 py-2 border-b border-indigo-200 dark:border-solar-base01 flex justify-between items-center"><h2 class="font-semibold text-indigo-900 dark:text-solar-cyan text-sm">4. Tendencias</h2><button onclick="APP.toggleChart(event)" class="text-xs text-gray-500 hover:text-gray-700 dark:text-solar-base0 dark:hover:text-solar-base1 bg-gray-100 dark:bg-solar-base02 px-2 py-1 rounded transition-colors">Cerrar</button></div>
+                        <div class="p-3 bg-gray-50 dark:bg-solar-base03 border-b border-gray-200 dark:border-solar-base01 flex flex-wrap gap-2 items-center transition-colors"><span class="text-xs font-medium text-gray-500 dark:text-solar-base0">Graficar valor (>1 toma):</span><select id="chartLabSelect" onchange="CHART.render(); RENDER.clasificacion();" class="text-xs border border-gray-300 dark:border-solar-base01 rounded px-3 py-1.5 bg-white dark:bg-solar-base02 text-gray-700 dark:text-solar-base1 flex-1 focus:outline-none"></select></div>
+                        <div class="flex-1 p-2 relative bg-white dark:bg-solar-base02"><canvas id="trendChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="mt-8 mb-2 flex flex-col items-center justify-center gap-3 text-xs text-gray-400 dark:text-solar-base0 text-center">
+            <p><span class="font-semibold text-gray-500 dark:text-solar-base0">Laboratoriazo V4.0.3</span> | Desarrollado con HTML5, Tailwind CSS y JavaScript por Saul Pool R5 Med. Crit.</p>
+        </footer>
+    </div>
+
+    <!-- Toggle Tema y Toast -->
+    <div class="fixed bottom-5 left-5 z-50 flex flex-col items-center gap-2 bg-white dark:bg-solar-base03 p-2 rounded-full shadow-lg border dark:border-solar-base01 transition-colors"><svg class="w-4 h-4 text-yellow-500 dark:text-solar-base0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg><button id="themeToggle" onclick="APP.toggleTheme()" class="w-5 h-10 bg-gray-300 dark:bg-solar-base01 rounded-full relative transition-colors"><div id="themeToggleCircle" class="w-4 h-4 bg-white dark:bg-solar-base02 rounded-full absolute top-0.5 left-0.5 transition-transform"></div></button><svg class="w-4 h-4 text-gray-400 dark:text-solar-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg></div>
+    <div id="toast" class="fixed bottom-5 right-5 bg-gray-900 dark:bg-solar-base02 text-white border dark:border-solar-base01 px-4 py-3 rounded-lg shadow-xl transition-all duration-300 translate-y-20 opacity-0 flex items-center gap-2 z-50"><svg id="toastIcon" class="w-5 h-5 text-green-400 dark:text-solar-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span id="toastMsg">!Exito!</span></div>
+
+    <!-- JAVASCRIPT: V4.0.3 MODULAR & COMPRESSED (Hospital Specific) -->
+    <script>
+        const STATE = { reports: [], pts: [], hist: [], mode: 'HM', isDark: false, highCrit: false, editId: null, showChart: false, chartInst: null };
+        const CONSTS = { HRS: 24, IGN: ['PACIENTE:','EXPEDIENTE:','FECHA IMP:','SOLICITUD:','SEXO:','SERVICIO:','FECHA DE','DIAGNOSTICO:','FECHA SOL:','VALIDADO POR','QUIMICA CLINICA','BIOMETRIA HEMATICA','ACIDO / BASICO','EXAMEN GENERAL DE ORINA','PRUEBAS DE FUNCIONAMIENTO','MICROBIOLOGIA','TOMA DE MUESTRA','EDAD:','CAMA:','RIESGO DE SEPSIS','CHOQUE S?PTICO','CHOQUE SÉPTICO','VALORES DE REFERENCIA','METODOLOGIA','MUESTRA:','RESULTADO','ACIDO/BASICO','IMPRESO POR:','UNIDADES','RANGO DE REF','OBSERVACIONES','ESTUDIO','VALOR NORMAL','INTERPRETACION','MUESTRA'] };
+        const CONFIG = {
+            HM: [
+                { id: 'ID', fields: [{ k: 'Paciente/Exp:', t: 'id_pte_exp' }] },
+                { id: 'Fec/hr', fields: [{ k: 'Fecha Imp:', t: 'id_fec' }] },
+                { id: 'BH', req: 'BIOMETRIA HEMATICA COMPLETA', fields: [{ k: 'HEMOGLOBINA', a: 'Hb', t: 'num' },{ k: 'HEMATOCRITO', a: 'Htc', t: 'num' },{ k: 'LEUCOCITOS', a: 'Leu', t: 'num' },{ k: 'NEUTROFILOS TOTALES', a: 'Neu', t: 'num' },{ k: 'LINFOCITOS TOTALES', a: 'Linf', t: 'num' },{ k: 'EOSINOFILOS TOTALES', a: 'Eos', t: 'num' },{ k: 'PLAQUETAS', a: 'Plt', t: 'num' }] },
+                { id: 'COAG', fields: [{ k: 'TIEMPO DE PROTROMBINA', a: 'TP', t: 'num_rev' },{ k: 'TIEMPO DE TROMBOPLASTINA PARCIAL', a: 'TTP', t: 'num_rev' },{ k: 'INR', a: 'INR', t: 'num_rev' },{ k: 'FIBRINOGENO', a: 'FIB', t: 'num_rev' },{ k: 'DIMERO-D', a: 'DIM-D', t: 'num_rev' }] },
+                { id: 'QS', req: 'QUIMICA CLINICA', fields: [{ k: 'GLUCOSA', a: 'Glu', t: 'num' },{ k: 'UREA', a: 'Urea', t: 'num' },{ k: 'CREATININA', a: 'Cr', t: 'num' },{ k: 'BUN', a: 'BUN', t: 'num' },{ k: 'CPK', a: 'CPK', t: 'num' },{ k: 'DESHIDROGENASA LACTICA', a: 'DHL', t: 'num' },{ k: 'CK-MB', a: 'CKMB', t: 'num' },{ k: 'CKMB', a: 'CKMB', t: 'num' },{ k: 'COLESTEROL TOTAL', a: 'COLT', t: 'num' },{ k: 'TRIGLICERIDOS', a: 'TRIG', t: 'num' }] },
+                { id: 'MARC', fields: [{ k: 'PROTEINA C REACTIVA ULTRASENSIBLE', a: 'PCR', t: 'num' },{ k: 'PROTEINA C REACTIVA ULTRASENS', a: 'PCR', t: 'num' },{ k: 'PROTEINA C REACTIVA', a: 'PCR', t: 'num' },{ k: 'PROCALCITONINA', a: 'PCT', t: 'num' },{ k: 'TROPONINAS', a: 'Tn', t: 'num' },{ k: 'TROPONINA', a: 'Tn', t: 'num' }] },
+                { id: 'ES', req: 'QUIMICA CLINICA', fields: [{ k: 'SODIO', a: 'Na', t: 'num' },{ k: 'CLORO', a: 'Cl', t: 'num' },{ k: 'POTASIO', a: 'K', t: 'num' },{ k: 'CALCIO', a: 'Ca', t: 'num' }] },
+                { id: 'PFH', req: 'PRUEBAS DE FUNCIONAMIENTO HEPATICO', fields: [{ k: 'PROTEINAS TOTALES', a: 'Prot', t: 'num' },{ k: 'ALBUMINA', a: 'Alb', t: 'num' },{ k: 'GLOBULINA', a: 'Glob', t: 'num' },{ k: 'BILIRRUBINA TOTAL', a: 'BT', t: 'num' },{ k: 'BILIRRUBINA DIRECTA', a: 'BD', t: 'num' },{ k: 'BILIRRUBINA INDIRECTA', a: 'BI', t: 'num' },{ k: 'AST', a: 'AST', t: 'num' },{ k: 'ALT', a: 'ALT', t: 'num' },{ k: 'TGP', a: 'ALT', t: 'num' },{ k: 'TGO', a: 'AST', t: 'num' },{ k: 'GAMA-GLUTAMIL TRANSFERASA', a: 'GGT', t: 'num' },{ k: 'GAMA-GLUTAMIL TRANFERASA', a: 'GGT', t: 'num' },{ k: 'FOSFATASA ALCALINA', a: 'FA', t: 'num' }] },
+                { id: 'GAS', req: 'ACIDO / BASICO', fields: [{ k: 'pH', a: 'pH', t: 'num' },{ k: 'pCO2', a: 'pCO2', t: 'num' },{ k: 'pO2', a: 'pO2', t: 'num' },{ k: 'HCO3 - act', a: 'HCO3', t: 'num' },{ k: 'Lac', a: 'Lac', t: 'num' },{ k: 'BE (ecf)', a: 'BE', t: 'num' },{ k: 'SO2c', a: 'SO2', t: 'num' },{ k: 'Ca++', a: 'Cai', t: 'num' },{ k: 'GLUCOSA', a: 'Gluc', t: 'num_rev' }] },
+                { id: 'BACT', fields: [{ k: 'TINCION DE GRAM', a: 'GRAM', t: 'culture' },{ k: 'CULTIVO DE SECRECION BRONQUIAL', a: 'CSB', t: 'culture' },{ k: 'HEMOCULTIVO ANAEROBIO', a: 'HEMO ANA', t: 'culture' },{ k: 'HEMOCULTIVO', a: 'HEMO', t: 'culture' },{ k: 'CULTIVO DE PUNTA DE CATETER', a: 'PUNTA', t: 'culture' },{ k: 'UROCULTIVO', a: 'URO', t: 'culture' },{ k: 'COPROCULTIVO', a: 'COPRO', t: 'culture' },{ k: 'CULTIVO DE LIQUIDO CEFALORRAQUIDEO', a: 'LCR', t: 'culture' },{ k: 'CULTIVO DE LIQUIDO PLEURAL', a: 'LP', t: 'culture' },{ k: 'CULTIVO DE LIQUIDO PERITONEAL', a: 'LA', t: 'culture' }] },
+                { id: 'EGO', req: 'EXAMEN GENERAL DE ORINA', fields: [{ k: 'DENSIDAD', a: 'DENS', t: 'num_rev' },{ k: 'pH', a: 'pH', t: 'num_rev' },{ k: 'PROTEINAS', a: 'Prot', t: 'ego' },{ k: 'GLUCOSA', a: 'Glu', t: 'ego' },{ k: 'CETONAS', a: 'Cet', t: 'ego' },{ k: 'BILIRRUBINA', a: 'Bil', t: 'ego' },{ k: 'SANGRE', a: 'Sang', t: 'ego' },{ k: 'NITRITOS', a: 'Nit', t: 'ego' },{ k: 'LEUCOCITOS', a: 'Leu', t: 'ego' },{ k: 'ERITROCITOS', a: 'Erit', t: 'ego' },{ k: 'CRISTALES', a: 'Crist', t: 'ego' },{ k: 'CILINDROS', a: 'Cilind', t: 'ego' },{ k: 'CELULAS EPITELIALES', a: 'Cel', t: 'ego' },{ k: 'BACTERIAS', a: 'Bact', t: 'ego' }] }
+            ]
+        };
+        CONFIG.HZ = [...CONFIG.HM]; CONFIG.HU = [...CONFIG.HM];
+
+        const UTILS = {
+            rm: s => s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+            cln: v => v.replace(/\*[AB]/gi, '').replace(/^[<>]\s*/, '').trim(),
+            esc: s => typeof s !== 'string' ? s : s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"),
+            pDate: d => {
+                if(!d) return new Date();
+                let m = d.match(/(\d{2,4})[\/\-](\d{2})[\/\-](\d{2,4})\s+(\d{2}):(\d{2})/);
+                return m ? new Date(m[3].length >= 2 ? "20"+(m[3].length===2?m[3]:m[3].slice(-2)) : m[1], m[2]-1, m[3].length >= 2 ? m[1] : m[3], m[4], m[5]) : new Date(d);
+            },
+            rgx: s => {
+                let u = '', rMin = null, rMax = null, isAb = /\*[AB]/i.test(s), c = s.replace(/\*[AB]/gi, '').trim();
+                let mN = c.match(/^[\<\>\+]?\s*([\d\.]+)/);
+                if(!mN) return { u, rMin, rMax, isAb };
+                let m = c.match(/^[\<\>\+]?\s*[\d\.\-]+\s+([A-Za-z0-9/%^µ\+]+)\s*(?:[\<\>\+]?\s*([\d\.]+)\s*-\s*([\d\.]+))?/);
+                if(m) { u = m[1]||''; if(m[2]&&m[3]){ rMin=parseFloat(m[2]); rMax=parseFloat(m[3]); } }
+                if(!isAb && !isNaN(parseFloat(mN[1]))) {
+                    let n = parseFloat(mN[1]), rm = c.match(/(\d+\.?\d*)\s*-\s*(\d+\.?\d*)/);
+                    if(rm) isAb = n < parseFloat(rm[1]) || n > parseFloat(rm[2]);
+                    else isAb = (c.match(/<\s*(\d+\.?\d*)/) && n >= parseFloat(RegExp.$1)) || (c.match(/>\s*(\d+\.?\d*)/) && n <= parseFloat(RegExp.$1));
+                }
+                return { u, rMin, rMax, isAb };
+            },
+            cp: (t, msg) => {
+                let ta = document.createElement("textarea"); ta.value = t;
+                Object.assign(ta.style, { top: 0, left: 0, position: 'fixed', opacity: 0 });
+                document.body.appendChild(ta); ta.focus(); ta.select();
+                try { document.execCommand('copy'); RENDER.toast(msg); } catch(e) { RENDER.toast("Error", "text-red-500"); }
+                document.body.removeChild(ta);
+            }
+        };
+
+        const PARSER = {
+            run: raw => {
+                STATE.reports = []; let txt = raw.trim(), enOtr = txt.toUpperCase().startsWith('OTROSLABS');
+                if(enOtr) txt = txt.replace(/^OTROSLABS\s*/i, '');
+                if(!txt) return;
+                let chunks = txt.split(/(?=^\s*Paciente:\s)/im).map(t => t.trim()).filter(t => t.length > 10);
+                if(chunks.length === 0) chunks = [txt];
+                let cnf = CONFIG[STATE.mode], ord = [...cnf.map(c => c.id), 'OTROS'];
+
+                chunks.forEach(ch => {
+                    let lns = ch.split('\n').map(l => l.trim()).filter(l => l), plns = lns.map(l => ({ r: l, c: UTILS.rm(l).toUpperCase() }));
+                    let usd = new Set(), pData = [], extCats = [], pExp = null, pDate = null;
+
+                    cnf.forEach(cat => {
+                        let srch = plns, reqCln = cat.req ? UTILS.rm(cat.req).toUpperCase() : null;
+                        if(reqCln) { let sIdx = srch.findIndex(o => o.c.includes(reqCln)); if(sIdx===-1) return; usd.add(srch[sIdx].r); srch = srch.slice(sIdx); }
+                        let cRes = [], exAb = new Set();
+                        
+                        cat.fields.forEach(f => {
+                            if(f.a && exAb.has(f.a)) return;
+                            let res = PARSER.xFld(f, srch, plns, usd);
+                            if(res) {
+                                if(f.t === 'id_pte_exp') pExp = res.exp; if(f.t === 'id_fec') pDate = res.v;
+                                cRes.push({ a: f.a||'', v: res.v, raw: res.rL, isAb: res.isAb, u: res.u, min: res.rMin, max: res.rMax });
+                                if(f.a) exAb.add(f.a);
+                            }
+                        });
+                        if(cRes.length > 0) { pData.push({ id: cat.id, res: cRes }); if(cat.id!=='ID' && cat.id!=='Fec/hr') extCats.push(cat.id); }
+                    });
+
+                    if(enOtr) {
+                        let oRes = [];
+                        plns.forEach(o => {
+                            if(usd.has(o.r) || CONSTS.IGN.some(k => o.c.includes(k))) return;
+                            let cl = UTILS.cln(o.r), m = cl.match(/^([A-Za-zñÑáéíóúÁÉÍÓÚ\s\-\(\)\/\+]+?)\s+([<>]?\s*\d+\.?\d*)/);
+                            if(m && m[1].trim().length > 2) {
+                                let rng = UTILS.rgx(o.r); oRes.push({ a: m[1].trim(), v: m[2].trim(), raw: o.r, isAb: rng.isAb, u: rng.u, min: rng.rMin, max: rng.rMax, txt: false }); usd.add(o.r);
+                            } else if(o.r.length > 3) oRes.push({ a: '', v: o.r.replace(/\s+/g, ' ').trim(), txt: true, isAb: false });
+                        });
+                        if(oRes.length > 0) { pData.push({ id: 'OTROS', res: oRes }); extCats.push('OTROS'); }
+                    }
+
+                    let lRep = STATE.reports[STATE.reports.length - 1];
+                    if(lRep && lRep.exp === pExp && lRep.fec === pDate && pExp && pDate) {
+                        lRep.raw += "\n" + ch;
+                        pData.forEach(nC => {
+                            let eC = lRep.data.find(c => c.id === nC.id);
+                            if(eC) nC.res.forEach(nR => { if(!eC.res.some(r => r.a===nR.a && r.v===nR.v)) eC.res.push(nR); });
+                            else { lRep.data.push(nC); lRep.cats.push(nC.id); }
+                        });
+                        lRep.data.sort((a,b) => (ord.indexOf(a.id)===-1?999:ord.indexOf(a.id)) - (ord.indexOf(b.id)===-1?999:ord.indexOf(b.id)));
+                    } else {
+                        pData.sort((a,b) => (ord.indexOf(a.id)===-1?999:ord.indexOf(a.id)) - (ord.indexOf(b.id)===-1?999:ord.indexOf(b.id)));
+                        STATE.reports.push({ raw: ch, exp: pExp, fec: pDate, data: pData, cats: extCats });
+                    }
+                });
+            },
+            xFld: (f, srch, all, usd) => {
+                if(f.t === 'id_pte_exp') {
+                    let p, e;
+                    for(let o of all) {
+                        if(!p && /Paciente:\s*(.*?)(?=\s+Fecha Imp:|$)/i.test(o.r)) { p=RegExp.$1.trim(); usd.add(o.r); }
+                        if(!e && /Expediente:\s*(\S+)/i.test(o.r)) { e=RegExp.$1.trim(); usd.add(o.r); }
+                    }
+                    if(!p && !e) return null;
+                    return { v: `${p||'Paciente'} (${e||'S/E'})`, exp: e||null, isAb: false };
+                }
+                if(f.t === 'id_fec') {
+                    for(let o of all) { if(/Fecha Imp:\s*(.*)/i.test(o.r)) { usd.add(o.r); return { v: RegExp.$1.trim().replace(/(\d{2})[\/\-](\d{2})[\/\-](\d{2,4})\s+(\d{2}:\d{2}).*/, '$1/$2/$3 $4'), isAb: false }; } } return null;
+                }
+                let tName = UTILS.rm(f.k).toUpperCase();
+                if(f.t === 'culture') {
+                    for(let i=0; i<srch.length; i++) {
+                        if(srch[i].c.includes(tName)) {
+                            usd.add(srch[i].r); let mR = "";
+                            for(let j=i; j<Math.min(i+15, srch.length); j++) if(/^\d+\.\s+(.+)$/.test(srch[j].r)) { mR=RegExp.$1.trim(); usd.add(srch[j].r); break; }
+                            if(!mR) {
+                                mR = srch[i].r.substring(srch[i].c.indexOf(tName)+tName.length).replace(/^[:\-]/,'').trim();
+                                if(mR.length < 3) {
+                                    for(let j=i+1; j<Math.min(i+6, srch.length); j++) {
+                                        if(/METODOLOGIA|AUTOMATIZADO/.test(srch[j].c)) continue;
+                                        if(/NO SE OBSERVA|NEGATIVO|SIN DESARROLLO|FLORA NORMAL/.test(srch[j].c)) { mR=srch[j].r.trim(); usd.add(srch[j].r); break; }
+                                    }
+                                }
+                            }
+                            if(!mR) continue;
+                            let dT = "??/??"; for(let k=i; k>=0; k--) if(srch[k].c.includes("TOMA DE MUESTRA") && /(\d{2})[\/\-](\d{2})/.test(srch[k].r)) { dT = `${RegExp.$1}/${RegExp.$2}`; break; }
+                            return { v: `${mR} (${dT})`, isAb: false };
+                        }
+                    }
+                    return null;
+                }
+                let list = f.t.includes('_rev') ? [...srch].reverse() : srch;
+                for(let o of list) {
+                    if(usd.has(o.r)) continue;
+                    if(o.c.startsWith(tName)) {
+                        let nx = o.c.charAt(tName.length); if(nx && /[A-Z]/.test(nx) && nx!=='+') continue;
+                        let rOL = o.r.substring(f.k.length).replace(/^[:\-]/,'').trim();
+                        if(!UTILS.cln(rOL)) continue;
+                        usd.add(o.r); let rng = UTILS.rgx(o.r), pV = f.t.startsWith('num') ? UTILS.cln(rOL).split(/\s+/)[0] : (isNaN(rOL.replace(/\s*(g\/l|mg\/dl|mmol\/L|U\/L|%\s*|\/?\s*Campo)\b/gi,'').trim().replace(',','.')) ? `(${rOL.replace(/\s*(g\/l|mg\/dl|mmol\/L|U\/L|%\s*|\/?\s*Campo)\b/gi,'').trim()})` : rOL.replace(/\s*(g\/l|mg\/dl|mmol\/L|U\/L|%\s*|\/?\s*Campo)\b/gi,'').trim());
+                        return { v: pV, rL: o.r, isAb: rng.isAb, u: rng.u, rMin: rng.rMin, rMax: rng.rMax };
+                    }
+                }
+                return null;
+            }
+        };
+
+        const RENDER = {
+            toast: (m, c="text-green-400 dark:text-solar-green") => { const t=document.getElementById('toast'), tm=document.getElementById('toastMsg'), ti=document.getElementById('toastIcon'); tm.innerText=m; ti.className=`w-5 h-5 ${c}`; t.classList.remove('translate-y-20','opacity-0'); setTimeout(()=>t.classList.add('translate-y-20','opacity-0'),3000); },
+            tags: () => {
+                const c = document.getElementById('gestorTags');
+                c.innerHTML = !STATE.pts.length ? '<span class="text-sm text-gray-400 dark:text-solar-base0 italic w-full text-center">Sin pendientes...</span>' : STATE.pts.map(p => `<div onclick="UTILS.cp('${p.exp}', 'Copiado')" class="tag-enter relative flex flex-col items-center px-4 py-2 rounded-xl border-2 shadow-sm ${p.status==='done'?'bg-green-50 border-green-400 dark:border-solar-green text-green-700 dark:text-solar-green':'bg-blue-50 dark:bg-solar-base03 border-blue-400 dark:border-solar-blue text-blue-800 dark:text-solar-blue cursor-pointer'} min-w-[5.5rem]">${p.status==='done'?`<div class="absolute -top-2 -right-2 bg-green-500 dark:bg-solar-green rounded-full p-0.5 border border-white dark:border-solar-base02"><svg class="w-3 h-3 text-white dark:text-solar-base03" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg></div>`:''}<span class="text-xl font-black mb-1">${p.bed||'S/C'}</span><span class="text-xs font-semibold opacity-80">${p.exp}</span></div>`).join('');
+            },
+            clasif: () => {
+                const tbl = document.getElementById('resultsTable'), tLab = (STATE.showChart && document.getElementById('chartLabSelect').value) || null;
+                document.getElementById('panelOutputTitle').innerText = tLab ? `2. Clasificación (Filtro)` : `2. Clasificación`;
+                if(!STATE.reports.length) return tbl.innerHTML = '<tr><td colspan="2" class="px-4 py-8 text-center text-gray-400 dark:text-solar-base0">Esperando datos...</td></tr>';
+                let html = '';
+                STATE.reports.forEach((rep, idx) => {
+                    let idRow = '', labRows = '';
+                    rep.data.forEach(c => {
+                        if(c.id === 'Fec/hr' || (!tLab && c.id === 'ID' && idx>0 && STATE.reports[idx-1].exp === rep.exp)) return;
+                        let hVals = [];
+                        c.res.forEach(r => {
+                            if(tLab && r.a !== tLab) return;
+                            const isC = r.isAb && STATE.highCrit, vCls = isC ? "text-red-600 dark:text-solar-red font-bold" : "text-blue-600 dark:text-solar-blue", sVal = UTILS.esc(r.v) + (isC?"!!":""), sAbb = UTILS.esc(r.a);
+                            if(c.id==='OTROS') hVals.push(r.txt ? `<div class="inline-block mr-4 mb-1 text-gray-500 dark:text-solar-base01 italic text-xs">${sVal}</div>` : `<div class="inline-block mr-4 mb-1"><span class="font-medium text-gray-700 dark:text-solar-base1">${sAbb}</span> <span class="${vCls}">${sVal}</span></div>`);
+                            else hVals.push(r.a ? `<span class="font-medium text-gray-700 dark:text-solar-base1">${sAbb}</span> <span class="${vCls}">${sVal}</span>` : `<span class="${vCls} font-bold">${sVal}</span>`);
+                        });
+                        if(hVals.length) {
+                            let rH = `<tr class="border-b dark:border-solar-base01 last:border-0 ${c.id==='OTROS'?'bg-gray-50 dark:bg-solar-base02':''}"><td class="px-4 py-3 font-bold align-top ${c.id==='OTROS'?'text-gray-500 dark:text-solar-base0':''}">${UTILS.esc(c.id)}</td><td class="px-4 py-3 whitespace-normal ${c.id==='OTROS'?'text-gray-500 dark:text-solar-base0':'text-gray-800 dark:text-solar-base1'}">${hVals.join(' &nbsp;&nbsp; ')}</td></tr>`;
+                            c.id==='ID' ? idRow=rH : labRows+=rH;
+                        }
+                    });
+                    if((tLab ? labRows.includes(tLab) : rep.cats.length)) html += `${idRow}<tr class="bg-indigo-50 dark:bg-solar-base03"><td colspan="2" class="px-4 py-2 font-bold text-xs text-indigo-700 dark:text-solar-cyan border-y border-indigo-100 dark:border-solar-base01">🗓️ ${rep.fec?UTILS.esc(rep.fec):`Reporte ${idx+1}`}</td></tr>${labRows}`;
+                });
+                tbl.innerHTML = html || `<tr><td colspan="2" class="px-4 py-8 text-center text-gray-400 dark:text-solar-base0">Sin coincidencias</td></tr>`;
+            },
+            hist: () => {
+                const c = document.getElementById('historyList'); document.getElementById('historyCount').innerText = STATE.hist.length;
+                if(!STATE.hist.length) return c.innerHTML = '<div class="text-center text-gray-400 dark:text-solar-base0 mt-8">Historial vacío.</div>';
+                c.innerHTML = [...STATE.hist].reverse().map((it, revI) => {
+                    let i = STATE.hist.length - 1 - revI;
+                    return `<div class="bg-white dark:bg-solar-base03 p-3 rounded-lg border dark:border-solar-base01 shadow-sm flex flex-col gap-1 transition-colors"><div class="flex justify-between items-start"><label class="flex items-start gap-2 cursor-pointer flex-1 pr-2"><input type="checkbox" class="hist-cb mt-0.5 accent-blue-600 dark:accent-solar-blue w-4 h-4 cursor-pointer" value="${i}" checked onchange="APP.toggleCb()"><div class="text-sm font-medium leading-tight dark:text-solar-base1">${it.tHTML}</div></label><div class="flex gap-2"><button onclick="APP.editHist(${i})" class="text-xs text-green-600 dark:text-solar-green hover:text-green-800 dark:hover:text-[#97ad00] bg-green-50 dark:bg-solar-base02 px-2 py-1 rounded transition-colors">Editar</button><button onclick="document.getElementById('hd-${i}').classList.toggle('hidden')" class="text-xs text-blue-600 dark:text-solar-blue hover:text-blue-800 dark:hover:text-solar-cyan bg-blue-50 dark:bg-solar-base02 px-2 py-1 rounded transition-colors">Ver</button><button onclick="APP.delHist(${i})" class="text-xs text-red-600 dark:text-solar-red hover:text-red-800 dark:hover:text-[#ff4a47] bg-red-50 dark:bg-solar-base02 px-2 py-1 rounded transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div></div><div class="text-xs ml-6 text-gray-500 dark:text-solar-base0">Labs: <span class="dark:text-solar-base1">${it.cats.join(', ')||'ID'}</span></div><div id="hd-${i}" class="hidden ml-6 mt-2 p-3 bg-gray-50 dark:bg-solar-base02 rounded text-xs font-mono whitespace-pre overflow-x-auto dark:text-solar-base1 transition-colors">${UTILS.esc(it.txt)}</div></div>`;
+                }).join(''); APP.toggleCb();
+            },
+            btns: () => {
+                const bH = document.getElementById('btnResaltar'), bT = document.getElementById('btnTendencias');
+                bH.className = `px-2.5 py-1.5 rounded-lg text-sm border font-medium transition-colors shadow-sm ${STATE.highCrit?'bg-indigo-600 dark:bg-solar-cyan text-white dark:text-solar-base03 border-indigo-700 dark:border-solar-cyan ring-2 ring-indigo-300 dark:ring-solar-base01':'bg-indigo-100 dark:bg-solar-base02 text-indigo-700 dark:text-solar-cyan border-indigo-200 dark:border-solar-base01 hover:bg-indigo-200 dark:hover:bg-solar-base01'}`;
+                bT.className = `px-2.5 py-1.5 rounded-lg text-sm border font-medium transition-colors shadow-sm ${STATE.showChart?'bg-indigo-600 dark:bg-solar-cyan text-white dark:text-solar-base03 border-indigo-700 dark:border-solar-cyan ring-2 ring-indigo-300 dark:ring-solar-base01':'bg-indigo-100 dark:bg-solar-base02 text-indigo-700 dark:text-solar-cyan border-indigo-200 dark:border-solar-base01 hover:bg-indigo-200 dark:hover:bg-solar-base01'}`;
+            }
+        };
+
+        const APP = {
+            init: () => { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => { STATE.isDark = e.matches; APP.applyTheme(); STORAGE.save(); }); },
+            toggleTheme: () => { STATE.isDark = !STATE.isDark; APP.applyTheme(); STORAGE.save(); },
+            applyTheme: () => { document.documentElement.classList.toggle('dark', STATE.isDark); document.getElementById('themeToggleCircle').classList.toggle('translate-y-5', STATE.isDark); CHART.render(); },
+            setMode: (m) => {
+                STATE.mode = m; ['HM','HZ','HU'].forEach(b => document.getElementById(`btnMode${b}`).className=`px-5 py-1.5 text-sm font-bold rounded-full transition-all ${b===m?'bg-white dark:bg-solar-base02 shadow-sm text-blue-600 dark:text-solar-blue':'text-gray-500 dark:text-solar-base0 hover:text-gray-700 dark:hover:text-solar-base1'}`);
+                const ov = document.getElementById('devOverlay');
+                if(m!=='HM') { ov.classList.replace('hidden','flex'); RENDER.toast("Modalidad en Desarrollo", "text-yellow-500 dark:text-solar-yellow"); } else { ov.classList.replace('flex','hidden'); RENDER.toast("Modo H. Metropolitano"); }
+                PARSER.run(document.getElementById('rawInput').value); RENDER.clasif(); STORAGE.save();
+            },
+            expandLeft: p => { document.getElementById('panelInput').style.flex = p==='input'?3:1; document.getElementById('panelOutput').style.flex = p==='input'?1:3; },
+            expandRight: p => { if(STATE.showChart) { document.getElementById('panelHistorial').style.flex = p==='historial'?3:1; document.getElementById('panelChart').style.flex = p==='chart'?3:1; } },
+            clearInput: e => { if(e) e.stopPropagation(); document.getElementById('rawInput').value=''; STATE.editId=null; APP.expandLeft('input'); PARSER.run(''); RENDER.clasif(); CHART.pop(); CHART.render(); document.getElementById('rawInput').focus(); },
+            updateGestor: () => {
+                STATE.pts = document.getElementById('gestorInput').value.split(/[\n,]+/).map(i=>i.trim()).filter(i=>i).map(it => {
+                    let eM=it.match(/\b(\d{6,8})\b/), e=eM?eM[1]:'', cM=(eM?it.replace(eM[0],''):it).match(/\b([A-Za-z0-9\-]{2,6})\b/), b=cM?cM[1].toUpperCase():null;
+                    if(!e) e=it.replace(/[^0-9]/g,''); let x=STATE.pts.find(p=>p.exp===e); return { bed:b, exp:e, status:x?x.status:'pending', orig:it };
+                }); RENDER.tags(); STORAGE.save();
+            },
+            toggleCritical: () => { STATE.highCrit = !STATE.highCrit; RENDER.btns(); RENDER.clasif(); STORAGE.save(); },
+            copyResults: e => {
+                if(e) e.stopPropagation(); if(!STATE.reports.length) return;
+                let tL = STATE.showChart ? document.getElementById('chartLabSelect').value : null, f = [];
+                STATE.reports.forEach((rep, i) => {
+                    let bd = rep.exp ? (STATE.pts.find(p=>p.exp===rep.exp)?.bed || "ID") : "ID";
+                    if(tL) { let lV = null; rep.data.forEach(c => c.res.forEach(r => { if(r.a===tL) lV = r.v + (r.isAb&&STATE.highCrit?"!!":""); })); if(lV) f.push(`${rep.fec||'S/F'}\t${tL} ${lV}`); }
+                    else {
+                        let lns = []; rep.data.forEach(c => {
+                            if(c.id==='ID' && i>0 && STATE.reports[i-1].exp===rep.exp) return;
+                            let vs = c.res.map(r => (r.a?`${r.a} `:"")+r.v+(r.isAb&&STATE.highCrit?"!!":"")).join(' ');
+                            lns.push(`${c.id==='ID'?bd:c.id}\t${vs}`);
+                        }); f.push(lns.join('\n'));
+                    }
+                }); if(f.length) UTILS.cp(f.join(tL?'\n':'\n\n'), "Copiado");
+            },
+            saveResults: e => {
+                if(e) e.stopPropagation(); if(!STATE.reports.length) return;
+                let map = {};
+                STATE.reports.forEach((r, i) => {
+                    let e = r.exp || `UNK_${i}`;
+                    if(!map[e]) {
+                        let pt = STATE.pts.find(p=>p.exp===e), bd = pt?.bed||"S/C", n = r.data.find(c=>c.id==='ID')?.res[0]?.v || "Desconocido";
+                        map[e] = { exp: r.exp, tHTML: (bd!=="S/C"?`<span class="bg-blue-100 dark:bg-solar-base02 text-blue-800 dark:text-solar-blue px-2 rounded mr-2">${UTILS.esc(bd)}</span>`:'')+UTILS.esc(n), lns: [], cats: new Set(), raw: [], bd, hasO: false };
+                    }
+                    let g = map[e]; g.raw.push(r.raw);
+                    r.data.forEach(c => {
+                        if(c.id==='ID' && g.lns.length) return;
+                        let vs = c.res.map(res => (res.a?`${res.a} `:"")+res.v+(res.isAb&&STATE.highCrit?"!!":"")).join(' ');
+                        g.lns.push(`${c.id==='ID'?(g.bd!=="S/C"?g.bd:"ID"):c.id}\t${vs}`);
+                        if(c.id!=='ID'&&c.id!=='Fec/hr') g.cats.add(c.id); if(c.id==='OTROS') g.hasO=true;
+                    }); g.lns.push('');
+                });
+                let svs = Object.values(map).map(g => ({ exp: g.exp, tHTML: g.tHTML, txt: g.lns.join('\n').trim(), cats: [...g.cats], txtR: (g.hasO?"OTROSLABS\n":"")+g.raw.join('\n\n') }));
+                if(STATE.editId !== null && svs.length === 1) { STATE.hist[STATE.editId] = svs[0]; RENDER.toast("Actualizado"); }
+                else { if(STATE.editId !== null) STATE.hist.splice(STATE.editId,1); STATE.hist.push(...svs); RENDER.toast(`Guardado (${svs.length})`); }
+                STATE.reports.forEach(r => { let p = STATE.pts.find(x=>x.exp===r.exp); if(p) p.status='done'; });
+                APP.clearInput(); RENDER.tags(); RENDER.hist(); CHART.pop(); STORAGE.save();
+            },
+            editHist: i => { let it = STATE.hist[i]; if(!it.txtR) return RENDER.toast("Incompatible", "text-yellow-500"); document.getElementById('rawInput').value = it.txtR; STATE.editId = i; PARSER.run(it.txtR); RENDER.clasif(); APP.expandLeft('input'); CHART.pop(); CHART.render(); RENDER.toast("Modo Edición", "text-blue-500"); },
+            delHist: i => {
+                if(!confirm("¿Eliminar reporte?")) return; let d = STATE.hist[i]; STATE.hist.splice(i, 1);
+                if(d.exp && !STATE.hist.some(h=>h.exp===d.exp)) { let p = STATE.pts.find(x=>x.exp===d.exp); if(p) p.status='pending'; RENDER.tags(); }
+                RENDER.hist(); CHART.pop(); CHART.render(); STORAGE.save(); RENDER.toast("Eliminado", "text-red-500 dark:text-solar-red");
+            },
+            toggleChart: e => {
+                if(e) e.stopPropagation(); STATE.showChart = !STATE.showChart; RENDER.btns();
+                const pH = document.getElementById('panelHistorial'), pC = document.getElementById('panelChart'), mG = document.getElementById('mainGrid'), rC = document.getElementById('rightCol');
+                if(STATE.showChart) { pC.style.display="flex"; pH.style.flex=1; pC.style.flex=3; mG.classList.replace('lg:grid-cols-2','lg:grid-cols-3'); rC.classList.replace('lg:col-span-1','lg:col-span-2'); CHART.pop(); CHART.render(); RENDER.clasif(); if(window.innerWidth<1024) pC.scrollIntoView({behavior:"smooth"}); }
+                else { pC.style.display="none"; pH.style.flex=1; mG.classList.replace('lg:grid-cols-3','lg:grid-cols-2'); rC.classList.replace('lg:col-span-2','lg:col-span-1'); RENDER.clasif(); }
+            },
+            toggleCb: () => { let t=document.querySelectorAll('.hist-cb').length; document.getElementById('selectAllHist').checked = (t>0 && t===document.querySelectorAll('.hist-cb:checked').length); },
+            toggleSelectAll: () => { let c = document.getElementById('selectAllHist').checked; document.querySelectorAll('.hist-cb').forEach(cb => cb.checked = c); },
+            copyHistory: e => { if(e) e.stopPropagation(); let ch = document.querySelectorAll('.hist-cb:checked'); if(!ch.length) return; UTILS.cp([...ch].map(cb=>parseInt(cb.value)).sort((a,b)=>a-b).map(i=>STATE.hist[i].txt).join('\n\n'), `Exportado (${ch.length})`); },
+            clearSession: e => { if(e) e.stopPropagation(); if(confirm("¿Terminar turno y borrar datos?")) STORAGE.clear(); }
+        };
+
+        const CHART = {
+            pop: () => {
+                const s = document.getElementById('chartLabSelect'); let map = {}, nms = {};
+                CONFIG[STATE.mode].forEach(c => c.fields.forEach(f => { if(f.a) nms[f.a] = f.k.replace(/ \*/g,''); }));
+                STATE.reports.forEach(r => r.data.forEach(c => { if(!['ID','Fec/hr','OTROS'].includes(c.id)) c.res.forEach(res => { if(res.a && !isNaN(parseFloat(res.v))) map[res.a] = (map[res.a]||0)+1; }); }));
+                let labs = Object.keys(map).filter(k => map[k]>1).sort(), cV = s.value;
+                if(!labs.length) { s.innerHTML = '<option value="">Requiere >1 fecha</option>'; s.disabled = true; }
+                else { s.disabled=false; s.innerHTML=labs.map(l => `<option value="${l}">${l} (${(nms[l]||'').charAt(0).toUpperCase()+(nms[l]||'').slice(1).toLowerCase()})</option>`).join(''); s.value = labs.includes(cV) ? cV : (labs.includes('Glu')?'Glu':labs[0]); }
+            },
+            render: () => {
+                if(!STATE.showChart) return;
+                const ab = document.getElementById('chartLabSelect').value, ctx = document.getElementById('trendChart').getContext('2d');
+                if(STATE.chartInst) STATE.chartInst.destroy(); if(!ab || !STATE.reports.length) return;
+                let pts = [], cU = '', cMin = null, cMax = null;
+                STATE.reports.forEach(r => { if(r.fec) { let d = UTILS.parseDate(r.fec); r.data.forEach(c => c.res.forEach(res => { if(res.a===ab) { let n = parseFloat(res.v.replace(/[()]/g,'').replace(',','.')); if(!isNaN(n)) { pts.push({x:d.getTime(),y:n,dL:r.fec}); if(res.u) cU=res.u; if(res.min!==null) cMin=res.min; if(res.max!==null) cMax=res.max; } } })); } });
+                pts.sort((a,b)=>a.x-b.x);
+                let tC = STATE.isDark?'#8892b0':'#4b5563', gC = STATE.isDark?'#233554':'#e5e7eb', ann = cMin&&cMax ? {box1:{type:'box',yMin:cMin,yMax:cMax,backgroundColor:STATE.isDark?'rgba(52,211,153,0.1)':'rgba(52,211,153,0.15)',borderColor:STATE.isDark?'rgba(52,211,153,0.6)':'rgba(16,185,129,0.6)',borderWidth:1.5,borderDash:[5,5],drawTime:'beforeDatasetsDraw'}}: {};
+                STATE.chartInst = new Chart(ctx, { type:'line', data:{datasets:[{label:ab, data:pts, borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,0.1)', borderWidth:2.5, pointBackgroundColor:'#2563eb', pointRadius:5, fill:false, tension:0.2}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false},title:{display:true,text:`Tendencia: ${ab} ${cU?'('+cU+')':''}`,color:tC},tooltip:{callbacks:{title:c=>c[0].raw.dL,label:c=>`${ab}: ${c.raw.y} ${cU}`}},annotation:{annotations:ann}}, scales:{x:{type:'linear',ticks:{color:tC,callback:v=>{let d=new Date(v); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}},grid:{color:gC}},y:{title:{display:true,text:cU||'Valor',color:tC},ticks:{color:tC},grid:{color:gC}}}} });
+            }
+        };
+
+        const STORAGE = {
+            save: () => localStorage.setItem('lab_sess', JSON.stringify({ pts: STATE.pts, hist: STATE.hist, mode: STATE.mode, isD: STATE.isDark, hC: STATE.highCrit, ts: Date.now() })),
+            loadSession: () => {
+                const d = JSON.parse(localStorage.getItem('lab_sess'));
+                if(d && (Date.now()-d.ts)/3600000 <= CONSTS.HRS) {
+                    STATE.pts=d.pts||[]; STATE.hist=d.hist||[]; STATE.isDark=d.isD!==undefined?d.isD:window.matchMedia('(prefers-color-scheme: dark)').matches; STATE.highCrit=d.hC||false;
+                    if(d.mode) APP.setMode(d.mode, true); document.getElementById('gestorInput').value = STATE.pts.map(p=>p.orig).join('\n');
+                } else { STATE.isDark = window.matchMedia('(prefers-color-scheme: dark)').matches; }
+                APP.applyTheme(); RENDER.btns(); RENDER.tags(); RENDER.hist(); document.getElementById('rawInput').addEventListener('input', () => { APP.expandLeft('input'); PARSER.run(document.getElementById('rawInput').value); RENDER.clasif(); if(STATE.showChart){ CHART.pop(); CHART.render(); } });
+            },
+            clear: () => { localStorage.removeItem('lab_sess'); STATE.pts=[]; STATE.hist=[]; document.getElementById('gestorInput').value=''; RENDER.tags(); RENDER.hist(); RENDER.toast("Datos borrados", "text-blue-500 dark:text-solar-blue"); }
+        };
+
+        window.onload = () => { APP.init(); STORAGE.loadSession(); };
+    </script>
+</body>
+</html>
