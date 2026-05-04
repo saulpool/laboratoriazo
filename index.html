@@ -412,7 +412,13 @@
             setMode: (m) => {
                 STATE.mode = m; ['HM','HZ','HU'].forEach(b => document.getElementById(`btnMode${b}`).className=`px-5 py-1.5 text-sm font-bold rounded-full transition-all ${b===m?'bg-white dark:bg-solar-base02 shadow-sm text-blue-600 dark:text-solar-blue':'text-gray-500 dark:text-solar-base0 hover:text-gray-700 dark:hover:text-solar-base1'}`);
                 const ov = document.getElementById('devOverlay');
-                if(m!=='HM') { ov.classList.replace('hidden','flex'); RENDER.toast("Modalidad en Desarrollo", "text-yellow-500 dark:text-solar-yellow"); } else { ov.classList.replace('flex','hidden'); RENDER.toast("Modo H. Metropolitano"); }
+                if(m === 'HU') { 
+                    ov.classList.replace('hidden','flex'); 
+                    RENDER.toast("Modalidad en Desarrollo", "text-yellow-500 dark:text-solar-yellow"); 
+                } else { 
+                    ov.classList.replace('flex','hidden'); 
+                    RENDER.toast(`Modo ${m === 'HM' ? 'H. Metropolitano' : 'H. Zambrano'}`); 
+                }
                 PARSER.run(document.getElementById('rawInput').value); RENDER.clasif(); STORAGE.save();
             },
             expandLeft: p => { document.getElementById('panelInput').style.flex = p==='input'?3:1; document.getElementById('panelOutput').style.flex = p==='input'?1:3; },
