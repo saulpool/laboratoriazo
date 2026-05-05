@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laboratoriazo V4.0.3</title>
+    <title>Laboratoriazo V5.0.1</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
@@ -312,8 +312,12 @@
 
                     if(matchHZ || matchHM) {
                         if(STATE.mode === 'HZ') {
+                            // Filtros Anti-Falsos Positivos
+                            if(tName === 'SODIO' && o.c.includes('EPISODIO')) continue;
+                            if(tName === 'PLAQUETAS' && o.c.includes('BIOMETRIA')) continue;
+                            if(tName === 'ALBUMINA' && o.c.includes('RELACION')) continue;
+                            if(tName === 'CALCIO' && o.c.includes('IONICO')) continue;
                             if(tName === 'LEUCOCITOS' && o.c.includes('ABSOLUTOS')) continue;
-                            if(tName === 'NEUTROFILOS' && o.c.includes('ABSOLUTOS')) continue;
                             
                             usd.add(o.r);
                             let cleanLine = o.r.replace(/[▲▼]/g, '').trim();
@@ -321,22 +325,39 @@
                             let prefix = cleanLine.substring(0, idx).trim();
                             let pV = '';
                             
-                            // Heurística de separación para números fusionados en HZ
-                            let dashMatch = prefix.match(/-\s*([\d\.]+)\s*%?$/) || prefix.match(/±\s*([\d\.]+)\s*%?$/);
+                            // Separador basado en decimales y reglas rígidas
+                            let dashMatch = prefix.match(/([\d\.]+)\s*-\s*([\d\.]+)$/);
+                            let pmMatch = prefix.match(/±\s*2([\-\+]*[\d\.]+)$/); // Regla para Exceso de Base
+                            
                             if(dashMatch) {
-                                let glued = dashMatch[1];
-                                let m2 = glued.match(/^(\d+\.\d+)([\-\+]?\d+\.\d+)$/);
-                                let m3 = glued.match(/^(\d+)([\-\+]\d+(\.\d+)?)$/);
+                                let minStr = dashMatch[1];
+                                let rightStr = dashMatch[2];
+                                let minDecMatch = minStr.match(/\.(\d+)$/);
                                 
-                                if(m2) { pV = m2[2]; }
-                                else if(m3) { pV = m3[2]; }
-                                else {
-                                    // Separador seguro basado en límites máximos predecibles de HZ
-                                    if(tName.includes('REACTIVA')) pV = glued.substring(1);
-                                    else if(tName.includes('TRIGLICERIDOS') || tName.includes('LACTICA') || tName.includes('COLESTEROL') || tName.includes('ALCALINA')) pV = glued.substring(3);
-                                    else if(tName.includes('UREA') || tName.includes('AMINOTRANSFERASA') || tName.includes('GAP')) pV = glued.substring(2);
-                                    else pV = glued.substring(Math.floor(glued.length / 2));
+                                if(minDecMatch) {
+                                    // Si el mínimo tiene decimales, el máximo tiene la misma cantidad de decimales.
+                                    let decCount = minDecMatch[1].length;
+                                    let firstDotIdx = rightStr.indexOf('.');
+                                    if(firstDotIdx !== -1) {
+                                        let maxLen = firstDotIdx + 1 + decCount;
+                                        pV = rightStr.substring(maxLen);
+                                    } else {
+                                        pV = rightStr;
+                                    }
+                                } else {
+                                    // Si son números enteros, separamos por los límites predecibles de HZ
+                                    if(tName.includes('PLAQUETAS') || tName.includes('TRIGLICERIDOS') || tName.includes('COLESTEROL') || tName.includes('HIERRO') || tName.includes('GLUCOSA') || tName.includes('ALCALINA') || tName.includes('LACTICA')) {
+                                        pV = rightStr.substring(3);
+                                    } else if(tName.includes('UREA') || tName.includes('AMINOTRANSFERASA') || tName.includes('GAP') || tName.includes('FOSFORO')) {
+                                        pV = rightStr.substring(2);
+                                    } else if(tName.includes('REACTIVA')) {
+                                        pV = rightStr.substring(1);
+                                    } else {
+                                        pV = rightStr.substring(Math.floor(rightStr.length / 2));
+                                    }
                                 }
+                            } else if(pmMatch) {
+                                pV = pmMatch[1];
                             } else {
                                 let lastNum = prefix.match(/([\-\+]?[\d\.]+)\s*%?$/);
                                 if(lastNum) pV = lastNum[1];
