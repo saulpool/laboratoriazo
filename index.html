@@ -113,6 +113,7 @@
                                 <button id="btnTendencias" onclick="APP.toggleChart(event)" class="px-2.5 py-1.5 rounded-lg text-sm border font-medium transition-colors shadow-sm">Tendencias</button>
                                 <button onclick="APP.clearSession(event)" title="Borrar turno" class="text-red-700 dark:text-solar-red bg-red-100 dark:bg-solar-base02 hover:bg-red-200 dark:hover:bg-solar-base01 px-2 py-1.5 rounded-lg border border-red-200 dark:border-solar-base01"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                                 <button onclick="APP.copyHistory(event)" class="text-sm bg-blue-600 dark:bg-solar-blue text-white dark:text-solar-base03 font-medium px-3 py-1.5 rounded-lg shadow-sm">Exportar</button>
+                                <button id="btnColHZ" onclick="APP.copyColumnHZ(event)" class="text-sm bg-purple-600 dark:bg-solar-magenta hover:bg-purple-700 text-white dark:text-solar-base03 font-medium px-3 py-1.5 rounded-lg shadow-sm hidden transition-all">En Columna</button>
                             </div>
                         </div>
                         <div class="bg-white dark:bg-solar-base02 px-4 py-2 border-b border-gray-200 dark:border-solar-base01 z-10"><label class="flex items-center gap-2 text-sm text-gray-700 dark:text-solar-base1 cursor-pointer font-medium hover:text-blue-600 dark:hover:text-solar-cyan"><input type="checkbox" id="selectAllHist" checked onchange="APP.toggleSelectAll()" class="w-4 h-4 accent-blue-600 dark:accent-solar-blue cursor-pointer"> Seleccionar Todos</label></div>
@@ -160,9 +161,9 @@
             { id: 'ID', fields: [{ k: 'PACIENTE :', t: 'id_pte_exp' }] },
             { id: 'Fec/hr', fields: [{ k: 'REPORTADA :', t: 'id_fec' }] },
             { id: 'BH', fields: [{ k: 'HEMOGLOBINA', a: 'Hb', t: 'num' },{ k: 'HEMATOCRITO', a: 'Htc', t: 'num' },{ k: 'LEUCOCITOS', a: 'Leu', t: 'num' },{ k: 'NEUTROFILOS ABSOLUTOS', a: 'Neu', t: 'num' },{ k: 'LINFOCITOS ABSOLUTOS', a: 'Linf', t: 'num' },{ k: 'PLAQUETAS', a: 'Plt', t: 'num' }, { k: 'VCM', a: 'VCM', t: 'num' }, { k: 'MCH', a: 'MCH', t: 'num' }, { k: 'MCHC', a: 'MCHC', t: 'num' }, { k: 'RDW-CV', a: 'RDW', t: 'num' }] },
-            { id: 'COAG', fields: [{ k: 'TIEMPO DE PROTROMBINA', a: 'TP', t: 'num' },{ k: 'TIEMPO PARCIAL DE TROMBOPLASTINA ACTIVADA', a: 'TTP', t: 'num' },{ k: 'INR', a: 'INR', t: 'num' },{ k: 'FIBRINOGENO', a: 'FIB', t: 'num' }] },
-            { id: 'QS', fields: [{ k: 'GLUCOSA', a: 'Glu', t: 'num' },{ k: 'UREA', a: 'Urea', t: 'num' },{ k: 'NITROGENO DE LA UREA', a: 'BUN', t: 'num' },{ k: 'CREATININA', a: 'Cr', t: 'num' },{ k: 'DESHIDROGENASA LACTICA (DHL)', a: 'DHL', t: 'num' },{ k: 'COLESTEROL TOTAL', a: 'COLT', t: 'num' },{ k: 'TRIGLICERIDOS', a: 'TRIG', t: 'num' }, { k: 'HIERRO', a: 'Fe', t: 'num' }] },
-            { id: 'MARC', fields: [{ k: 'PROTEINA C REACTIVA INFECCIOSA', a: 'PCR', t: 'num' }, { k: 'PEPTIDO NATRIURETICO', a: 'BNP', t: 'num' }, { k: 'PROCALCITONINA', a: 'PCT', t: 'num' }, { k: 'DEPURACION DE CREATININA 24 HORAS', a: 'DepCr', t: 'num' }, { k: 'DEPURACION DE NITROGENO DE LA UREA 24 HORAS', a: 'DepNU', t: 'num' }, { k: 'DEPURACION DE UREA 24 HORAS', a: 'DepUrea', t: 'num' }] },
+            { id: 'COAG', fields: [{ k: 'TIEMPO DE PROTROMBINA', a: 'TP', t: 'num' },{ k: 'TIEMPO PARCIAL DE TROMBOPLASTINA ACTIVADA', a: 'TTP', t: 'num' },{ k: 'INR', a: 'INR', t: 'num' },{ k: 'FIBRINOGENO', a: 'FIB', t: 'num' }, { k: 'TIEMPO DE TROMBINA', a: 'TT', t: 'num' }] },
+            { id: 'QS', fields: [{ k: 'GLUCOSA', a: 'Glu', t: 'num' },{ k: 'UREA', a: 'Urea', t: 'num' },{ k: 'NITROGENO DE LA UREA', a: 'BUN', t: 'num' },{ k: 'CREATININA', a: 'Cr', t: 'num' },{ k: 'DESHIDROGENASA LACTICA (DHL)', a: 'DHL', t: 'num' },{ k: 'COLESTEROL TOTAL', a: 'COLT', t: 'num' },{ k: 'TRIGLICERIDOS', a: 'TRIG', t: 'num' }, { k: 'HIERRO', a: 'Fe', t: 'num' }, { k: 'ACIDO URICO', a: 'AU', t: 'num' }, { k: 'CK-CREATIN-QUINASA', a: 'CPK', t: 'num' }, { k: 'CK-MB', a: 'CKMB', t: 'num' }] },
+            { id: 'MARC', fields: [{ k: 'PROTEINA C REACTIVA INFECCIOSA', a: 'PCR', t: 'num' }, { k: 'PEPTIDO NATRIURETICO', a: 'BNP', t: 'num' }, { k: 'PROCALCITONINA', a: 'PCT', t: 'num' }, { k: 'TROPONINAS', a: 'Tn', t: 'num' }, { k: 'TROPONINA', a: 'Tn', t: 'num' }, { k: 'DEPURACION DE CREATININA 24 HORAS', a: 'DepCr', t: 'num' }, { k: 'DEPURACION DE NITROGENO DE LA UREA 24 HORAS', a: 'DepNU', t: 'num' }, { k: 'DEPURACION DE UREA 24 HORAS', a: 'DepUrea', t: 'num' }] },
             { id: 'ES', fields: [{ k: 'SODIO', a: 'Na', t: 'num' },{ k: 'CLORO', a: 'Cl', t: 'num' },{ k: 'POTASIO', a: 'K', t: 'num' },{ k: 'CALCIO', a: 'Ca', t: 'num' },{ k: 'MAGNESIO', a: 'Mg', t: 'num' }, { k: 'FOSFORO', a: 'P', t: 'num' }] },
             { id: 'PFH', fields: [{ k: 'PROTEINAS TOTALES', a: 'Prot', t: 'num' },{ k: 'ALBUMINA', a: 'Alb', t: 'num' },{ k: 'GLOBULINAS', a: 'Glob', t: 'num' },{ k: 'BILIRRUBINA TOTAL', a: 'BT', t: 'num' },{ k: 'BILIRRUBINA DIRECTA', a: 'BD', t: 'num' },{ k: 'BILIRRUBINA INDIRECTA', a: 'BI', t: 'num' },{ k: 'ASPARTATO AMINOTRANSFERASA(AST)', a: 'AST', t: 'num' },{ k: 'ALANINO AMINOTRANSFERASA(ALT)', a: 'ALT', t: 'num' },{ k: 'FOSFATASA ALCALINA', a: 'FA', t: 'num' }] },
             { id: 'GAS', fields: [{ k: 'pH', a: 'pH', t: 'num' },{ k: 'PCO2', a: 'pCO2', t: 'num' },{ k: 'PO2', a: 'pO2', t: 'num' },{ k: 'HCO3', a: 'HCO3', t: 'num' },{ k: 'LACTATO', a: 'Lac', t: 'num' },{ k: 'EXCESO DE BASE', a: 'BE', t: 'num' },{ k: 'SATURACION DE OXIGENO (SAT DE O2)', a: 'SO2', t: 'num' },{ k: 'CALCIO IONICO', a: 'Cai', t: 'num' }] },
@@ -450,6 +451,8 @@
             setMode: (m) => {
                 STATE.mode = m; ['HM','HZ','HU'].forEach(b => document.getElementById(`btnMode${b}`).className=`px-5 py-1.5 text-sm font-bold rounded-full transition-all ${b===m?'bg-white dark:bg-solar-base02 shadow-sm text-blue-600 dark:text-solar-blue':'text-gray-500 dark:text-solar-base0 hover:text-gray-700 dark:hover:text-solar-base1'}`);
                 const ov = document.getElementById('devOverlay');
+                const btnCol = document.getElementById('btnColHZ');
+                if(btnCol) btnCol.classList.toggle('hidden', m !== 'HZ');
                 if(m === 'HU') { 
                     ov.classList.replace('hidden','flex'); 
                     RENDER.toast("Modalidad en Desarrollo", "text-yellow-500 dark:text-solar-yellow"); 
@@ -531,6 +534,41 @@
             toggleCb: () => { let t=document.querySelectorAll('.hist-cb').length; document.getElementById('selectAllHist').checked = (t>0 && t===document.querySelectorAll('.hist-cb:checked').length); },
             toggleSelectAll: () => { let c = document.getElementById('selectAllHist').checked; document.querySelectorAll('.hist-cb').forEach(cb => cb.checked = c); },
             copyHistory: e => { if(e) e.stopPropagation(); let ch = document.querySelectorAll('.hist-cb:checked'); if(!ch.length) return; UTILS.cp([...ch].map(cb=>parseInt(cb.value)).sort((a,b)=>a-b).map(i=>STATE.hist[i].txt).join('\n\n'), `Exportado (${ch.length})`); },
+            copyColumnHZ: e => {
+                if(e) e.stopPropagation();
+                let ch = document.querySelectorAll('.hist-cb:checked');
+                if(!ch.length) return RENDER.toast("Selecciona reporte(s)", "text-yellow-500");
+                
+                // Tu plantilla exacta de 56 filas
+                const order = ['Leu','Hb','Htc','Plt','Neu','Linf','Urea','Alb','AU','BD','BI','BT','Glu','Cr','COLT','Ca','P','Na','K','Cl','Mg','DHL','FA','Glob','BUN','Prot','AST','ALT','GGT','Fe','FiO2','pH','pO2','pCO2','SO2','HCO3','BE','Cai','Lac','PCR','PCT','','VSG','IL6','FERR','PCII','TP','INR','TTP','FIB','TT','HbL','BNP','Tn','CPK','CKMB'];
+                
+                let selIdxs = [...ch].map(cb=>parseInt(cb.value)).sort((a,b)=>a-b);
+                let colsData = selIdxs.map(idx => {
+                    let txt = STATE.hist[idx].txt;
+                    let map = {};
+                    txt.split('\n').forEach(l => {
+                        let parts = l.split('\t');
+                        if(parts.length > 1) {
+                            let labs = parts[1];
+                            order.forEach(a => {
+                                if(!a) return;
+                                // Expresión regular que busca la abreviatura exacta y extrae el valor
+                                let match = labs.match(new RegExp('\\b' + a + '\\s+([<>]?\\s*[^\\s]+)'));
+                                if(match) map[a] = match[1].replace(/!!/g, ''); // Quita las alertas rojas para Excel
+                            });
+                        }
+                    });
+                    return map;
+                });
+                
+                // Ensambla las filas con tabuladores para Excel
+                let finalLines = order.map(a => {
+                    if(!a) return colsData.map(c => '').join('\t');
+                    return colsData.map(c => c[a] || '').join('\t');
+                });
+                
+                UTILS.cp(finalLines.join('\n'), `Copiado en Columna (${selIdxs.length})`);
+            },
             clearSession: e => { if(e) e.stopPropagation(); if(confirm("¿Terminar turno y borrar datos?")) STORAGE.clear(); }
         };
 
