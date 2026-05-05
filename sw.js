@@ -1,4 +1,4 @@
-const CACHE_NAME = 'laboratoriazo-cache-v4.0.3';
+const CACHE_NAME = 'laboratoriazo-cache-v5.0.1';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
