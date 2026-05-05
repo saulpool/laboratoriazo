@@ -206,7 +206,9 @@
                 STATE.reports = []; let txt = raw.trim(), enOtr = txt.toUpperCase().startsWith('OTROSLABS');
                 if(enOtr) txt = txt.replace(/^OTROSLABS\s*/i, '');
                 if(!txt) return;
-                let chunks = txt.split(/(?=^\s*Paciente:\s)/im).map(t => t.trim()).filter(t => t.length > 10);
+                
+                // Expresión regular mejorada para detectar "Paciente:" o "PACIENTE :" y cortar el texto por reportes
+                let chunks = txt.split(/(?=^\s*PACIENTE\s*:\s)/im).map(t => t.trim()).filter(t => t.length > 10);
                 if(chunks.length === 0) chunks = [txt];
                 let cnf = CONFIG[STATE.mode], ord = [...cnf.map(c => c.id), 'OTROS'];
 
