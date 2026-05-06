@@ -551,8 +551,8 @@
                 let ch = document.querySelectorAll('.hist-cb:checked');
                 if(!ch.length) return RENDER.toast("Selecciona reporte(s)", "text-yellow-500");
                 
-                // Tu plantilla exacta de 56 filas
-                const order = ['Leu','Hb','Htc','Plt','Neu','Linf','Urea','Alb','AU','BD','BI','BT','Glu','Cr','COLT','Ca','P','Na','K','Cl','Mg','DHL','FA','Glob','BUN','Prot','AST','ALT','GGT','Fe','FiO2','pH','pO2','pCO2','SO2','HCO3','BE','Cai','Lac','PCR','PCT','','VSG','IL6','FERR','PCII','TP','INR','TTP','FIB','TT','HbL','BNP','Tn','CPK','CKMB'];
+                // Tu plantilla exacta de 57 filas (incluyendo ahora el proBNP)
+                const order = ['Leu','Hb','Htc','Plt','Neu','Linf','Urea','Alb','AU','BD','BI','BT','Glu','Cr','COLT','Ca','P','Na','K','Cl','Mg','DHL','FA','Glob','BUN','Prot','AST','ALT','GGT','Fe','FiO2','pH','pO2','pCO2','SO2','HCO3','BE','Cai','Lac','PCR','PCT','','VSG','IL6','FERR','PCII','TP','INR','TTP','FIB','TT','HbL','BNP','proBNP','Tn','CPK','CKMB'];
                 
                 let selIdxs = [...ch].map(cb=>parseInt(cb.value)).sort((a,b)=>a-b);
                 let colsData = selIdxs.map(idx => {
