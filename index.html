@@ -495,17 +495,20 @@
                 if(e) e.stopPropagation(); if(!STATE.reports.length) return;
                 let map = {};
                 STATE.reports.forEach((r, i) => {
-                    let e = r.exp || `UNK_${i}`;
+                    // ESCUDO ANTI-BASURA: Ignorar pedazos de texto (como encabezados) que no tienen laboratorios
+                    if (r.cats.length === 0 && !r.data.some(c => c.id === 'OTROS')) return;
+                    
+                    let e_id = r.exp || `UNK_${i}`;
                     let nInfo = r.data.find(c=>c.id==='ID')?.res[0]?.v || "Desconocido";
                     let pureName = UTILS.rm(nInfo.split('(')[0]).toUpperCase().trim();
                     
-                    if(!map[e]) {
+                    if(!map[e_id]) {
                         // Cruce inteligente por Expediente o por Nombre
-                        let pt = STATE.pts.find(p => (p.exp && p.exp === e) || (p.name && p.name.length > 3 && pureName.includes(p.name)));
+                        let pt = STATE.pts.find(p => (p.exp && p.exp === e_id) || (p.name && p.name.length > 3 && pureName.includes(p.name)));
                         let bd = pt?.bed||"S/C", n = nInfo;
-                        map[e] = { exp: r.exp, nameMatched: pt?.name, tHTML: (bd!=="S/C"?`<span class="bg-blue-100 dark:bg-solar-base02 text-blue-800 dark:text-solar-blue px-2 rounded mr-2">${UTILS.esc(bd)}</span>`:'')+UTILS.esc(n), lns: [], cats: new Set(), raw: [], bd, hasO: false };
+                        map[e_id] = { exp: r.exp, nameMatched: pt?.name, tHTML: (bd!=="S/C"?`<span class="bg-blue-100 dark:bg-solar-base02 text-blue-800 dark:text-solar-blue px-2 rounded mr-2">${UTILS.esc(bd)}</span>`:'')+UTILS.esc(n), lns: [], cats: new Set(), raw: [], bd, hasO: false };
                     }
-                    let g = map[e]; g.raw.push(r.raw);
+                    let g = map[e_id]; g.raw.push(r.raw);
                     r.data.forEach(c => {
                         if(c.id==='ID' && g.lns.length) return;
                         let vs = c.res.map(res => (res.a?`${res.a} `:"")+res.v+(res.isAb&&STATE.highCrit?"!!":"")).join(' ');
@@ -513,10 +516,19 @@
                         if(c.id!=='ID'&&c.id!=='Fec/hr') g.cats.add(c.id); if(c.id==='OTROS') g.hasO=true;
                     }); g.lns.push('');
                 });
+                
                 let svs = Object.values(map).map(g => ({ exp: g.exp, tHTML: g.tHTML, txt: g.lns.join('\n').trim(), cats: [...g.cats], txtR: (g.hasO?"OTROSLABS\n":"")+g.raw.join('\n\n') }));
                 if(STATE.editId !== null && svs.length === 1) { STATE.hist[STATE.editId] = svs[0]; RENDER.toast("Actualizado"); }
                 else { if(STATE.editId !== null) STATE.hist.splice(STATE.editId,1); STATE.hist.push(...svs); RENDER.toast(`Guardado (${svs.length})`); }
-                STATE.reports.forEach(r => { let p = STATE.pts.find(x=>x.exp===r.exp); if(p) p.status='done'; });
+                
+                // Cambiar a status 'Done' (verde) buscando por expediente o por nombre
+                STATE.reports.forEach(r => { 
+                    let nInfo = r.data.find(c=>c.id==='ID')?.res[0]?.v || "";
+                    let pureName = UTILS.rm(nInfo.split('(')[0]).toUpperCase().trim();
+                    let p = STATE.pts.find(x => (x.exp && x.exp === r.exp) || (x.name && x.name.length > 3 && pureName.includes(x.name))); 
+                    if(p) p.status='done'; 
+                });
+                
                 APP.clearInput(); RENDER.tags(); RENDER.hist(); CHART.pop(); STORAGE.save();
             },
             editHist: i => { let it = STATE.hist[i]; if(!it.txtR) return RENDER.toast("Incompatible", "text-yellow-500"); document.getElementById('rawInput').value = it.txtR; STATE.editId = i; PARSER.run(it.txtR); RENDER.clasif(); APP.expandLeft('input'); CHART.pop(); CHART.render(); RENDER.toast("Modo Edición", "text-blue-500"); },
