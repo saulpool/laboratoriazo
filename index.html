@@ -368,6 +368,8 @@
                                 } else {
                                     if(tName.includes('PLAQUETAS') || tName.includes('TRIGLICERIDOS') || tName.includes('COLESTEROL') || tName.includes('HIERRO') || tName.includes('GLUCOSA') || tName.includes('ALCALINA') || tName.includes('LACTICA') || tName.includes('DEPURACION DE CREATININA')) {
                                         pV = rightStr.substring(3);
+                                    } else if (tName === 'PO2') {
+                                        pV = rightStr.startsWith('108') ? rightStr.substring(3) : rightStr.substring(2)
                                     } else if(tName.includes('UREA') || tName.includes('AMINOTRANSFERASA') || tName.includes('GAP') || tName.includes('FOSFORO') || tName.includes('MAGNESIO')) {
                                         pV = rightStr.substring(2);
                                     } else if(tName.includes('REACTIVA')) {
