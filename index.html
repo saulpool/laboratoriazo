@@ -209,8 +209,7 @@
                 if(enOtr) txt = txt.replace(/^OTROSLABS\s*/i, '');
                 if(!txt) return;
                 
-                // Expresión regular mejorada para detectar "Paciente:" o "PACIENTE :" y cortar el texto por reportes
-                let chunks = txt.split(/(?=^\s*PACIENTE\s*:\s)/im).map(t => t.trim()).filter(t => t.length > 10);
+                let chunks = txt.split(/(?=^\s*PACIENTE\s*:\s|^\s*Paciente:\s)/im).map(t => t.trim()).filter(t => t.length > 10);
                 if(chunks.length === 0) chunks = [txt];
                 let cnf = CONFIG[STATE.mode], ord = [...cnf.map(c => c.id), 'OTROS'];
 
@@ -254,7 +253,6 @@
                             let eC = lRep.data.find(c => c.id === nC.id);
                             if(eC) {
                                 nC.res.forEach(nR => { 
-                                    // Bloqueo estricto: Si ya existe esta abreviatura en esta hora, ignora la de la gasometría
                                     let isDup = nR.a ? eC.res.some(r => r.a === nR.a) : eC.res.some(r => r.v === nR.v);
                                     if(!isDup) eC.res.push(nR); 
                                 });
@@ -263,12 +261,14 @@
                         });
                         lRep.data.sort((a,b) => (ord.indexOf(a.id)===-1?999:ord.indexOf(a.id)) - (ord.indexOf(b.id)===-1?999:ord.indexOf(b.id)));
                     } else {
-                        pData.sort((a,b) => (ord.indexOf(a.id)===-1?999:ord.indexOf(a.id)) - (ord.indexOf(b.id)===-1?999:ord.indexOf(b.id)));
-                        STATE.reports.push({ raw: ch, exp: pExp, fec: pDate, data: pData, cats: extCats });
+                        if (extCats.length > 0 || pData.some(c => c.id === 'OTROS')) {
+                            pData.sort((a,b) => (ord.indexOf(a.id)===-1?999:ord.indexOf(a.id)) - (ord.indexOf(b.id)===-1?999:ord.indexOf(b.id)));
+                            STATE.reports.push({ raw: ch, exp: pExp, fec: pDate, data: pData, cats: extCats });
+                        }
                     }
                 });
             },
-        xFld: (f, srch, all, usd) => {
+            xFld: (f, srch, all, usd) => {
                 if(f.t === 'id_pte_exp') {
                     let p, e;
                     for(let o of all) {
@@ -314,17 +314,34 @@
                 }
                 
                 let list = f.t.includes('_rev') ? [...srch].reverse() : srch;
+                
+                // Zonas de Seguridad HZ
+                let inGasZone = false;
+                let inUroZone = false;
+
                 for(let o of list) {
                     if(usd.has(o.r)) continue;
                     
                     let matchHZ = STATE.mode === 'HZ' && o.c.includes(tName);
                     let matchHM = STATE.mode !== 'HZ' && o.c.startsWith(tName);
 
+                    if(STATE.mode === 'HZ') {
+                        if(o.c.includes('EQUILIBRIO ACIDO-BASE')) inGasZone = true;
+                        if(o.c.includes('UROANALISIS')) inUroZone = true;
+                        if(o.c.includes('HEMATOLOGIA') || o.c.includes('QUIMICAS') || o.c.includes('INMUNOQUIMICA')) { inGasZone = false; inUroZone = false; }
+                    }
+
                     if(matchHZ || matchHM) {
                         if(STATE.mode === 'HZ') {
                             if(f.t === 'num' && !/\d/.test(o.r)) continue; // Asesino de Títulos
 
-                            // Filtros Anti-Falsos Positivos y Aislamientos
+                            // Escudos Zonales (Cruces de Sangre, Orina y Gases)
+                            if(inGasZone && f.a && !f.a.endsWith('G') && ['Hb','Htc','Glu','Na','K','Cl'].includes(f.a)) continue;
+                            if(!inGasZone && f.a && f.a.endsWith('G')) continue;
+                            if(inUroZone && ['Leu','Erit','CetS'].includes(f.a)) continue;
+                            if(!inUroZone && ['CetO','LeuUro','EritUro'].includes(f.a)) continue;
+
+                            // Filtros Anti-Falsos Positivos
                             if(tName === 'SODIO' && o.c.includes('EPISODIO')) continue;
                             if(tName === 'PLAQUETAS' && o.c.includes('BIOMETRIA')) continue;
                             if(tName === 'ALBUMINA' && (o.c.includes('RELACION') || o.c.includes('PRE'))) continue;
@@ -335,8 +352,9 @@
                             if(tName === 'PH' && o.c.includes('9.00')) continue;
                             if(tName === 'UREA' && o.c.includes('NITROGENO')) continue;
                             if(tName === 'CREATININA' && (o.c.includes('DEPURACION') || o.c.includes('ORINA') || o.c.includes('24') || o.c.includes('MIN') || o.c.includes('SUPERFICIE') || o.c.includes('VOLUMEN') || o.c.includes('RELACION'))) continue;
-                            if(tName === 'ERITROCITOS' && o.c.includes('CAMPO')) continue; // Aisla BH de EGO
-                            if(tName === 'CETONAS' && o.c.includes('NITROPRUSIATO')) continue; // Aisla Suero de Orina
+                            if(tName === 'ERITROCITOS' && o.c.includes('CAMPO')) continue; 
+                            if(tName === 'CETONAS' && o.c.includes('NITROPRUSIATO')) continue; 
+                            if(tName === 'PEPTIDO NATRIURETICO' && !o.c.includes('(BNP)')) continue; // Seguro para BNP
                             
                             usd.add(o.r);
                             let cleanLine = o.r.replace(/[▲▼]/g, '').trim();
@@ -349,15 +367,20 @@
                             let dashMatch = prefix.match(/([\d\.]+)\s*-\s*([\d\.]+)$/);
                             
                             if (f.t === 'ego') {
-                                // Despegador de Textos de Orina HZ
-                                let egoMatch = prefix.match(/(?:NEGATIVO|CLARO|PAJA|AMARILLO|ESCASAS?|TURBIO|MODERADAS?|ABUNDANTES?|0\s*-\s*\d+|MENOR IGUAL A \d+\.\d+)\s*(.*)$/i);
-                                if (egoMatch && egoMatch[1].trim()) pV = egoMatch[1].trim();
+                                // Despegador Dinámico EGO
+                                let egoMatch = prefix.match(/(?:NEGATIVO|CLARO|PAJA|AMARILLO|ESCASAS?|TURBIOS?|MODERADAS?|ABUNDANTES?|0\s*-\s*\d+|MENOR IGUAL A \d+\.\d+)(.*)$/i);
+                                if (egoMatch && egoMatch[1].trim()) pV = egoMatch[1].replace(/^[,\s]+|[,\s]+$/g, '').trim();
                                 else {
-                                    // Salvavidas: si la palabra clínica no está en la lista frecuente, extrae el texto usando comas como anclas
                                     let cmaMatch = prefix.match(/,\s*(.*)$/);
                                     if(cmaMatch && cmaMatch[1].trim()) pV = cmaMatch[1].trim();
-                                    else pV = prefix.split(/\s+/).pop();
+                                    else {
+                                        // Extrae números y rangos en orina (ej. "1-5LEUCOCITOS")
+                                        let numRange = prefix.match(/([\d\s\-]+)$/);
+                                        if (numRange) pV = numRange[1].trim();
+                                        else pV = prefix.split(/\s+/).pop();
+                                    }
                                 }
+                                if(!pV) pV = prefix.split(/\s+/).pop();
                             } else if (pmMatch) {
                                 pV = pmMatch[1];
                             } else if (menorMatch) {
@@ -404,11 +427,17 @@
                             let isAb = o.r.includes('▲') || o.r.includes('▼');
                             return { v: pV || prefix, rL: o.r, isAb: isAb, u: '', rMin: null, rMax: null };
 
+                        } else {
+                            let nx = o.c.charAt(tName.length); if(nx && /[A-Z]/.test(nx) && nx!=='+') continue;
+                            let rOL = o.r.substring(f.k.length).replace(/^[:\-]/,'').trim();
+                            if(!UTILS.cln(rOL)) continue;
+                            usd.add(o.r); let rng = UTILS.rgx(o.r), pV = f.t.startsWith('num') ? UTILS.cln(rOL).split(/\s+/)[0] : (isNaN(rOL.replace(/\s*(g\/l|mg\/dl|mmol\/L|U\/L|%\s*|\/?\s*Campo)\b/gi,'').trim().replace(',','.')) ? `(${rOL.replace(/\s*(g\/l|mg\/dl|mmol\/L|U\/L|%\s*|\/?\s*Campo)\b/gi,'').trim()})` : rOL.replace(/\s*(g\/l|mg\/dl|mmol\/L|U\/L|%\s*|\/?\s*Campo)\b/gi,'').trim());
+                            return { v: pV, rL: o.r, isAb: rng.isAb, u: rng.u, rMin: rng.rMin, rMax: rng.rMax };
                         }
                     }
                 }
                 return null;
-            }    
+            }
         };
 
         const RENDER = {
