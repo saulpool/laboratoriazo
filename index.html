@@ -16,7 +16,6 @@
             });
         }
     </script>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
@@ -62,7 +61,6 @@
                 </div>
             </div>
         </header>
-
         <!-- GESTOR -->
         <div class="bg-white dark:bg-solar-base02 rounded-xl shadow-sm border border-gray-200 dark:border-solar-base01 mb-6 flex flex-col overflow-hidden transition-colors">
             <div class="bg-blue-50 dark:bg-solar-base03 px-4 py-2 border-b border-blue-200 dark:border-solar-base01"><h2 class="font-semibold text-blue-900 dark:text-solar-blue text-sm">Gestor de Expedientes</h2></div>
@@ -74,7 +72,6 @@
                 <div class="flex-1 bg-gray-50 dark:bg-solar-base03 border border-gray-200 dark:border-solar-base01 rounded-lg p-3 flex flex-wrap gap-3 items-center min-h-[5rem] max-h-32 overflow-y-auto custom-scrollbar transition-colors" id="gestorTags"></div>
             </div>
         </div>
-
         <div class="relative">
             <!-- OVERLAY DE DESARROLLO -->
             <div id="devOverlay" class="hidden absolute inset-0 z-50 bg-white/60 dark:bg-solar-base03/60 backdrop-blur-[2px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-400 dark:border-solar-base01 transition-all duration-300">
@@ -83,7 +80,6 @@
                     <h2 class="text-xl font-bold text-gray-800 dark:text-solar-base2 mb-2">Modalidad en Desarrollo</h2><p class="text-sm text-gray-500 dark:text-solar-base0">Por favor, utiliza el formato HM.</p>
                 </div>
             </div>
-
             <!-- MAIN GRID -->
             <div id="mainGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-6 transition-all duration-500">
                 <div id="leftCol" class="flex flex-col gap-4 h-[75vh] lg:col-span-1 transition-all duration-500">
@@ -91,7 +87,6 @@
                         <div class="bg-blue-50 dark:bg-solar-base03 px-4 py-3 border-b border-blue-200 dark:border-solar-base01 flex justify-between items-center"><h2 class="font-semibold text-blue-900 dark:text-solar-blue">1. Cargado</h2><button onclick="APP.clearInput(event)" title="Limpiar reporte" class="text-red-700 dark:text-solar-red hover:bg-red-100 dark:hover:bg-solar-base02 px-2 py-1.5 rounded-lg border border-red-200 dark:border-solar-base01"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div>
                         <textarea id="rawInput" class="flex-1 w-full p-4 resize-none bg-transparent text-gray-800 dark:text-solar-base1 focus:outline-none custom-scrollbar" placeholder="Pega el reporte aquí... (Usa 'OTROSLABS' al inicio para extraer todo)"></textarea>
                     </div>
-
                     <div id="panelOutput" onclick="APP.expandLeft('output')" style="flex: 1;" class="bg-white dark:bg-solar-base02 rounded-xl shadow-sm border border-gray-200 dark:border-solar-base01 overflow-hidden flex flex-col cursor-pointer transition-all">
                         <div class="bg-blue-50 dark:bg-solar-base03 px-4 py-3 border-b border-blue-200 dark:border-solar-base01 flex justify-between items-center">
                             <h2 id="panelOutputTitle" class="font-semibold text-blue-900 dark:text-solar-blue">2. Clasificación</h2>
@@ -104,7 +99,6 @@
                         <div class="flex-1 overflow-auto p-0 custom-scrollbar"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="bg-white dark:bg-solar-base02 sticky top-0 border-b border-gray-200 dark:border-solar-base01"><tr><th class="px-4 py-3 font-semibold text-gray-600 dark:text-solar-base0 w-24">Categoría</th><th class="px-4 py-3 font-semibold text-gray-600 dark:text-solar-base0">Valores</th></tr></thead><tbody id="resultsTable" class="divide-y divide-gray-100 dark:divide-solar-base01"><tr><td colspan="2" class="px-4 py-8 text-center text-gray-400 dark:text-solar-base0">Esperando datos...</td></tr></tbody></table></div>
                     </div>
                 </div>
-
                 <div id="rightCol" class="flex flex-col gap-4 h-[75vh] lg:col-span-1 transition-all duration-500">
                     <div id="panelHistorial" onclick="APP.expandRight('historial')" style="flex: 1;" class="bg-white dark:bg-solar-base02 rounded-xl shadow-sm border border-gray-200 dark:border-solar-base01 overflow-hidden flex flex-col cursor-pointer transition-all">
                         <div class="bg-blue-50 dark:bg-solar-base03 px-4 py-3 border-b border-blue-200 dark:border-solar-base01 flex justify-between items-center">
@@ -119,7 +113,6 @@
                         <div class="bg-white dark:bg-solar-base02 px-4 py-2 border-b border-gray-200 dark:border-solar-base01 z-10"><label class="flex items-center gap-2 text-sm text-gray-700 dark:text-solar-base1 cursor-pointer font-medium hover:text-blue-600 dark:hover:text-solar-cyan"><input type="checkbox" id="selectAllHist" checked onchange="APP.toggleSelectAll()" class="w-4 h-4 accent-blue-600 dark:accent-solar-blue cursor-pointer"> Seleccionar Todos</label></div>
                         <div class="flex-1 overflow-auto p-4 custom-scrollbar bg-gray-50 dark:bg-solar-base02 flex flex-col gap-3" id="historyList"></div>
                     </div>
-
                     <div id="panelChart" onclick="APP.expandRight('chart')" style="display: none; flex: 1;" class="bg-white dark:bg-solar-base02 rounded-xl shadow-sm border border-gray-200 dark:border-solar-base01 overflow-hidden flex flex-col cursor-pointer transition-all">
                         <div class="bg-indigo-50 dark:bg-solar-base03 px-4 py-2 border-b border-indigo-200 dark:border-solar-base01 flex justify-between items-center"><h2 class="font-semibold text-indigo-900 dark:text-solar-cyan text-sm">4. Tendencias</h2><button onclick="APP.toggleChart(event)" class="text-xs text-gray-500 hover:text-gray-700 dark:text-solar-base0 dark:hover:text-solar-base1 bg-gray-100 dark:bg-solar-base02 px-2 py-1 rounded transition-colors">Cerrar</button></div>
                         <div class="p-3 bg-gray-50 dark:bg-solar-base03 border-b border-gray-200 dark:border-solar-base01 flex flex-wrap gap-2 items-center transition-colors"><span class="text-xs font-medium text-gray-500 dark:text-solar-base0">Graficar valor (>1 toma):</span><select id="chartLabSelect" onchange="CHART.render(); RENDER.clasificacion();" class="text-xs border border-gray-300 dark:border-solar-base01 rounded px-3 py-1.5 bg-white dark:bg-solar-base02 text-gray-700 dark:text-solar-base1 flex-1 focus:outline-none"></select></div>
@@ -128,16 +121,13 @@
                 </div>
             </div>
         </div>
-        
         <footer class="mt-8 mb-2 flex flex-col items-center justify-center gap-3 text-xs text-gray-400 dark:text-solar-base0 text-center">
             <p><span class="font-semibold text-gray-500 dark:text-solar-base0">Laboratoriazo V4.0.3</span> | Desarrollado con HTML5, Tailwind CSS y JavaScript por Saul Pool R5 Med. Crit.</p>
         </footer>
     </div>
-
     <!-- Toggle Tema y Toast -->
     <div class="fixed bottom-5 left-5 z-50 flex flex-col items-center gap-2 bg-white dark:bg-solar-base03 p-2 rounded-full shadow-lg border dark:border-solar-base01 transition-colors"><svg class="w-4 h-4 text-yellow-500 dark:text-solar-base0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg><button id="themeToggle" onclick="APP.toggleTheme()" class="w-5 h-10 bg-gray-300 dark:bg-solar-base01 rounded-full relative transition-colors"><div id="themeToggleCircle" class="w-4 h-4 bg-white dark:bg-solar-base02 rounded-full absolute top-0.5 left-0.5 transition-transform"></div></button><svg class="w-4 h-4 text-gray-400 dark:text-solar-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg></div>
     <div id="toast" class="fixed bottom-5 right-5 bg-gray-900 dark:bg-solar-base02 text-white border dark:border-solar-base01 px-4 py-3 rounded-lg shadow-xl transition-all duration-300 translate-y-20 opacity-0 flex items-center gap-2 z-50"><svg id="toastIcon" class="w-5 h-5 text-green-400 dark:text-solar-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span id="toastMsg">!Exito!</span></div>
-
     <!-- JAVASCRIPT: V4.0.3 MODULAR & COMPRESSED (Hospital Specific) -->
     <script>
         const STATE = { reports: [], pts: [], hist: [], mode: 'HM', isDark: false, highCrit: false, editId: null, showChart: false, chartInst: null };
@@ -163,15 +153,14 @@
             { id: 'BH', fields: [{ k: 'HEMOGLOBINA', a: 'Hb', t: 'num' },{ k: 'HEMATOCRITO', a: 'Htc', t: 'num' },{ k: 'LEUCOCITOS', a: 'Leu', t: 'num' },{ k: 'NEUTROFILOS ABSOLUTOS', a: 'Neu', t: 'num' },{ k: 'LINFOCITOS ABSOLUTOS', a: 'Linf', t: 'num' },{ k: 'PLAQUETAS', a: 'Plt', t: 'num' }, { k: 'VCM', a: 'VCM', t: 'num' }, { k: 'MCH', a: 'MCH', t: 'num' }, { k: 'MCHC', a: 'MCHC', t: 'num' }, { k: 'RDW-CV', a: 'RDW', t: 'num' }] },
             { id: 'COAG', fields: [{ k: 'TIEMPO DE PROTROMBINA', a: 'TP', t: 'num' },{ k: 'TIEMPO PARCIAL DE TROMBOPLASTINA ACTIVADA', a: 'TTP', t: 'num' },{ k: 'INR', a: 'INR', t: 'num' },{ k: 'FIBRINOGENO', a: 'FIB', t: 'num' }, { k: 'TIEMPO DE TROMBINA', a: 'TT', t: 'num' }, { k: 'DIMERO D', a: 'DD', t: 'num' }] },
             { id: 'QS', fields: [{ k: 'GLUCOSA', a: 'Glu', t: 'num' },{ k: 'UREA', a: 'Urea', t: 'num' },{ k: 'NITROGENO DE LA UREA', a: 'BUN', t: 'num' },{ k: 'CREATININA', a: 'Cr', t: 'num' },{ k: 'DESHIDROGENASA LACTICA (DHL)', a: 'DHL', t: 'num' },{ k: 'COLESTEROL TOTAL', a: 'COLT', t: 'num' },{ k: 'TRIGLICERIDOS', a: 'TRIG', t: 'num' }, { k: 'HIERRO', a: 'Fe', t: 'num' }, { k: 'ACIDO URICO', a: 'AU', t: 'num' }, { k: 'CETONAS', a: 'CetS', t: 'num' }, { k: 'CK-CREATIN-QUINASA', a: 'CPK', t: 'num' }, { k: 'CK-MB', a: 'CKMB', t: 'num' }] },
-            { id: 'MARC', fields: [{ k: 'PROTEINA C REACTIVA INFECCIOSA', a: 'PCR', t: 'num' }, { k: 'PEPTIDO NATRIURETICO', a: 'BNP', t: 'num_rev' }, { k: 'PROCALCITONINA', a: 'PCT', t: 'num' }, { k: 'TROPONINAS', a: 'Tn', t: 'num' }, { k: 'TROPONINA', a: 'Tn', t: 'num' }, { k: 'DEPURACION DE CREATININA 24 HORAS', a: 'DepCr', t: 'num' }, { k: 'DEPURACION DE NITROGENO DE LA UREA 24 HORAS', a: 'DepNU', t: 'num' }, { k: 'DEPURACION DE UREA 24 HORAS', a: 'DepUrea', t: 'num' }] },
+            { id: 'MARC', fields: [{ k: 'PROTEINA C REACTIVA INFECCIOSA', a: 'PCR', t: 'num' }, { k: 'PEPTIDO NATRIURETICO', a: 'BNP', t: 'num' }, { k: 'NT PRO BNP', a: 'proBNP', t: 'num' }, { k: 'PROCALCITONINA', a: 'PCT', t: 'num' }, { k: 'TROPONINAS', a: 'Tn', t: 'num' }, { k: 'TROPONINA', a: 'Tn', t: 'num' }, { k: 'DEPURACION DE CREATININA 24 HORAS', a: 'DepCr', t: 'num' }, { k: 'DEPURACION DE NITROGENO DE LA UREA 24 HORAS', a: 'DepNU', t: 'num' }, { k: 'DEPURACION DE UREA 24 HORAS', a: 'DepUrea', t: 'num' }] },
             { id: 'ES', fields: [{ k: 'SODIO', a: 'Na', t: 'num' },{ k: 'CLORO', a: 'Cl', t: 'num' },{ k: 'POTASIO', a: 'K', t: 'num' },{ k: 'CALCIO', a: 'Ca', t: 'num' },{ k: 'MAGNESIO', a: 'Mg', t: 'num' }, { k: 'FOSFORO', a: 'P', t: 'num' }] },
             { id: 'PFH', fields: [{ k: 'PROTEINAS TOTALES', a: 'Prot', t: 'num' },{ k: 'ALBUMINA', a: 'Alb', t: 'num' },{ k: 'GLOBULINAS', a: 'Glob', t: 'num' },{ k: 'BILIRRUBINA TOTAL', a: 'BT', t: 'num' },{ k: 'BILIRRUBINA DIRECTA', a: 'BD', t: 'num' },{ k: 'BILIRRUBINA INDIRECTA', a: 'BI', t: 'num' },{ k: 'ASPARTATO AMINOTRANSFERASA(AST)', a: 'AST', t: 'num' },{ k: 'ALANINO AMINOTRANSFERASA(ALT)', a: 'ALT', t: 'num' },{ k: 'FOSFATASA ALCALINA', a: 'FA', t: 'num' }] },
             { id: 'GAS', req: 'EQUILIBRIO ACIDO-BASE', fields: [{ k: 'pH', a: 'pH', t: 'num' },{ k: 'PCO2', a: 'pCO2', t: 'num' },{ k: 'PO2', a: 'pO2', t: 'num' },{ k: 'HCO3', a: 'HCO3', t: 'num' },{ k: 'LACTATO', a: 'Lac', t: 'num' },{ k: 'EXCESO DE BASE', a: 'BE', t: 'num' },{ k: 'SATURACION DE OXIGENO (SAT DE O2)', a: 'SO2', t: 'num' },{ k: 'CALCIO IONICO', a: 'Cai', t: 'num' }, { k: 'HEMOGLOBINA TOTAL', a: 'HbG', t: 'num' },{ k: 'HEMATOCRITO', a: 'HtcG', t: 'num' },{ k: 'GLUCOSA', a: 'GluG', t: 'num' },{ k: 'SODIO', a: 'NaG', t: 'num' },{ k: 'POTASIO', a: 'KG', t: 'num' },{ k: 'CLORO', a: 'ClG', t: 'num' }] },
-            { id: 'EGO', req: 'PARCIAL DE ORINA', fields: [{ k: 'ASPECTO', a: 'Asp', t: 'ego_rev' },{ k: 'COLOR', a: 'Col', t: 'ego_rev' },{ k: 'pH', a: 'pH_U', t: 'ego' },{ k: 'DENSIDAD URINARIA', a: 'Dens', t: 'ego_rev' },{ k: 'PROTEINAS', a: 'ProtU', t: 'ego_rev' },{ k: 'GLUCOSA EN ORINA', a: 'GluU', t: 'ego_rev' },{ k: 'CETONAS', a: 'CetO', t: 'ego_rev' },{ k: 'BILIRRUBINA', a: 'BilU', t: 'ego_rev' },{ k: 'NITRITOS', a: 'Nit', t: 'ego_rev' },{ k: 'UROBILINOGENO', a: 'Urobil', t: 'ego' },{ k: 'LEUCOCITOS (ESTERASA)', a: 'LeuEst', t: 'ego_rev' },{ k: 'LEUCOCITOS', a: 'LeuUro', t: 'ego' },{ k: 'ERITROCITOS', a: 'EritUro', t: 'ego' },{ k: 'CELULAS EPITELIALES', a: 'CelEp', t: 'ego' },{ k: 'MOCO', a: 'Moco', t: 'ego' },{ k: 'CRISTALES', a: 'Crist', t: 'ego' },{ k: 'CILINDROS', a: 'Cilind', t: 'ego' },{ k: 'BACTERIAS', a: 'Bact', t: 'ego' },{ k: 'LEVADURAS', a: 'Levad', t: 'ego' }] },
+            { id: 'EGO', req: 'PARCIAL DE ORINA', fields: [{ k: 'ASPECTO', a: 'Asp', t: 'ego' },{ k: 'COLOR', a: 'Col', t: 'ego' },{ k: 'pH', a: 'pH_U', t: 'ego' },{ k: 'DENSIDAD URINARIA', a: 'Dens', t: 'ego' },{ k: 'PROTEINAS', a: 'ProtU', t: 'ego' },{ k: 'GLUCOSA EN ORINA', a: 'GluU', t: 'ego' },{ k: 'CETONAS', a: 'CetO', t: 'ego' },{ k: 'BILIRRUBINA', a: 'BilU', t: 'ego' },{ k: 'NITRITOS', a: 'Nit', t: 'ego' },{ k: 'UROBILINOGENO', a: 'Urobil', t: 'ego' },{ k: 'LEUCOCITOS (ESTERASA)', a: 'LeuEst', t: 'ego' },{ k: 'LEUCOCITOS', a: 'LeuUro', t: 'ego' },{ k: 'ERITROCITOS', a: 'EritUro', t: 'ego' },{ k: 'CELULAS EPITELIALES', a: 'CelEp', t: 'ego' },{ k: 'MOCO', a: 'Moco', t: 'ego' },{ k: 'CRISTALES', a: 'Crist', t: 'ego' },{ k: 'CILINDROS', a: 'Cilind', t: 'ego' },{ k: 'BACTERIAS', a: 'Bact', t: 'ego' },{ k: 'LEVADURAS', a: 'Levad', t: 'ego' }] },
             { id: 'BACT', fields: [{ k: 'TINCION DE GRAM', a: 'GRAM', t: 'culture' },{ k: 'CULTIVO DE SECRECION BRONQUIAL', a: 'CSB', t: 'culture' },{ k: 'HEMOCULTIVO', a: 'HEMO', t: 'culture' },{ k: 'UROCULTIVO', a: 'URO', t: 'culture' }] }
         ];
         CONFIG.HU = [...CONFIG.HM];
-
         const UTILS = {
             rm: s => s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
             cln: v => v.replace(/\*[AB]/gi, '').replace(/^[<>]\s*/, '').trim(),
@@ -202,26 +191,21 @@
                 document.body.removeChild(ta);
             }
         };
-
         const PARSER = {
             run: raw => {
                 STATE.reports = []; let txt = raw.trim(), enOtr = txt.toUpperCase().startsWith('OTROSLABS');
                 if(enOtr) txt = txt.replace(/^OTROSLABS\s*/i, '');
                 if(!txt) return;
-                
                 let chunks = txt.split(/(?=^\s*PACIENTE\s*:\s|^\s*Paciente:\s)/im).map(t => t.trim()).filter(t => t.length > 10);
                 if(chunks.length === 0) chunks = [txt];
                 let cnf = CONFIG[STATE.mode], ord = [...cnf.map(c => c.id), 'OTROS'];
-
                 chunks.forEach(ch => {
                     let lns = ch.split('\n').map(l => l.trim()).filter(l => l), plns = lns.map(l => ({ r: l, c: UTILS.rm(l).toUpperCase() }));
                     let usd = new Set(), pData = [], extCats = [], pExp = null, pDate = null;
-
                     cnf.forEach(cat => {
                         let srch = plns, reqCln = cat.req ? UTILS.rm(cat.req).toUpperCase() : null;
                         if(reqCln) { let sIdx = srch.findIndex(o => o.c.includes(reqCln)); if(sIdx===-1) return; usd.add(srch[sIdx].r); srch = srch.slice(sIdx); }
                         let cRes = [], exAb = new Set();
-                        
                         cat.fields.forEach(f => {
                             if(f.a && exAb.has(f.a)) return;
                             let res = PARSER.xFld(f, srch, plns, usd);
@@ -233,7 +217,6 @@
                         });
                         if(cRes.length > 0) { pData.push({ id: cat.id, res: cRes }); if(cat.id!=='ID' && cat.id!=='Fec/hr') extCats.push(cat.id); }
                     });
-
                     if(enOtr) {
                         let oRes = [];
                         plns.forEach(o => {
@@ -245,7 +228,6 @@
                         });
                         if(oRes.length > 0) { pData.push({ id: 'OTROS', res: oRes }); extCats.push('OTROS'); }
                     }
-
                     let lRep = STATE.reports[STATE.reports.length - 1];
                     if(lRep && lRep.exp === pExp && lRep.fec === pDate && pExp && pDate) {
                         lRep.raw += "\n" + ch;
@@ -312,35 +294,27 @@
                     }
                     return null;
                 }
-                
                 let list = f.t.includes('_rev') ? [...srch].reverse() : srch;
-                
                 // Zonas de Seguridad HZ
                 let inGasZone = false;
                 let inUroZone = false;
-
                 for(let o of list) {
                     if(usd.has(o.r)) continue;
-                    
                     let matchHZ = STATE.mode === 'HZ' && o.c.includes(tName);
                     let matchHM = STATE.mode !== 'HZ' && o.c.startsWith(tName);
-
                     if(STATE.mode === 'HZ') {
                         if(o.c.includes('EQUILIBRIO ACIDO-BASE')) inGasZone = true;
                         if(o.c.includes('UROANALISIS')) inUroZone = true;
                         if(o.c.includes('HEMATOLOGIA') || o.c.includes('QUIMICAS') || o.c.includes('INMUNOQUIMICA')) { inGasZone = false; inUroZone = false; }
                     }
-
                     if(matchHZ || matchHM) {
                         if(STATE.mode === 'HZ') {
                             if(f.t === 'num' && !/\d/.test(o.r)) continue; // Asesino de Títulos
-
                             // Escudos Zonales (Cruces de Sangre, Orina y Gases)
                             if(inGasZone && f.a && !f.a.endsWith('G') && ['Hb','Htc','Glu','Na','K','Cl'].includes(f.a)) continue;
                             if(!inGasZone && f.a && f.a.endsWith('G')) continue;
                             if(inUroZone && ['Leu','Erit','CetS'].includes(f.a)) continue;
                             if(!inUroZone && ['CetO','LeuUro','EritUro'].includes(f.a)) continue;
-
                             // Filtros Anti-Falsos Positivos
                             if(tName === 'SODIO' && o.c.includes('EPISODIO')) continue;
                             if(tName === 'PLAQUETAS' && o.c.includes('BIOMETRIA')) continue;
@@ -355,82 +329,95 @@
                             if(tName === 'ERITROCITOS' && o.c.includes('CAMPO')) continue; 
                             if(tName === 'CETONAS' && o.c.includes('NITROPRUSIATO')) continue; 
                             if(tName === 'PEPTIDO NATRIURETICO' && !o.c.includes('(BNP)')) continue; // Seguro para BNP
-                            
                             usd.add(o.r);
                             let cleanLine = o.r.replace(/[▲▼]/g, '').trim();
                             let idx = cleanLine.toUpperCase().lastIndexOf(tName);
                             let prefix = cleanLine.substring(0, idx).trim();
                             let pV = '';
                             
-                            let pmMatch = prefix.match(/±\s*2\s*([\-\+]*[\d\.]+)$/); 
-                            let menorMatch = prefix.match(/MENOR (?:A|IGUAL A)\s*([\d\.]+)$/i);
-                            let dashMatch = prefix.match(/([\d\.]+)\s*-\s*([\d\.]+)$/);
-                            
-                            if (f.t.startsWith('ego')) {
-                                // Despegador Dinámico EGO (Protegido contra rangos pegados)
-                                let numPegado = prefix.match(/0\s*-\s*\d+([\d\.]+)$/);
-                                let densMatch = prefix.match(/1\.035(1\.0\d{2})$/);
-                                let egoMatch = prefix.match(/(?:NEGATIVO|CLARO|PAJA|AMARILLO|ESCASAS?|TURBIOS?|MODERADAS?|ABUNDANTES?|MENOR IGUAL A \d+\.\d+)(.*)$/i);
+                            // --- MODO COMPUTADORA (Input B) ---
+                            if (cleanLine.toUpperCase().startsWith(tName)) {
+                                let cutLine = cleanLine.substring(tName.length).trim();
+                                if (f.t.startsWith('ego')) {
+                                    let egoMatchPC = cutLine.match(/^(NEGATIVO|CLARO|PAJA|AMARILLO|ESCASAS?|TURBIOS?|MODERADAS?|ABUNDANTES?|\d+\s*-\s*\d+|MENOR IGUAL A \d+\.\d+)/i);
+                                    if(egoMatchPC) pV = egoMatchPC[1].trim();
+                                    else pV = cutLine.split(/\s+/)[0];
+                                } else {
+                                    pV = cutLine.split(/\s+/)[0]; 
+                                }
+                            } 
+                            // --- MODO NAVEGADOR (Input A) ---
+                            else {
+                                let idx = cleanLine.toUpperCase().lastIndexOf(tName);
+                                let prefix = cleanLine.substring(0, idx).trim();
                                 
-                                if (densMatch) pV = densMatch[1];
-                                else if (numPegado) pV = numPegado[1];
-                                else if (egoMatch && egoMatch[1].trim()) pV = egoMatch[1].replace(/^[,\s]+|[,\s]+$/g, '').trim();
-                                else {
-                                    let cmaMatch = prefix.match(/,\s*(.*)$/);
-                                    if(cmaMatch && cmaMatch[1].trim()) pV = cmaMatch[1].trim();
+                                let pmMatch = prefix.match(/±\s*2\s*([\-\+]*[\d\.]+)$/); 
+                                let menorMatch = prefix.match(/MENOR (?:A|IGUAL A)\s*([\d\.]+)$/i);
+                                let dashMatch = prefix.match(/([\d\.]+)\s*-\s*([\d\.]+)$/);
+                                
+                                if (f.t.startsWith('ego')) {
+                                    let numPegado = prefix.match(/0\s*-\s*\d+([\d\.]+)$/);
+                                    let densMatch = prefix.match(/1\.035(1\.0\d{2})$/);
+                                    let egoMatch = prefix.match(/(?:NEGATIVO|CLARO|PAJA|AMARILLO|ESCASAS?|TURBIOS?|MODERADAS?|ABUNDANTES?|MENOR IGUAL A \d+\.\d+)(.*)$/i);
+                                    
+                                    if (densMatch) pV = densMatch[1];
+                                    else if (numPegado) pV = numPegado[1];
+                                    else if (egoMatch && egoMatch[1].trim()) pV = egoMatch[1].replace(/^[,\s]+|[,\s]+$/g, '').trim();
                                     else {
-                                        let numRange = prefix.match(/([\d\s\-]+)$/);
-                                        if (numRange) pV = numRange[1].trim();
-                                        else pV = prefix.split(/\s+/).pop();
+                                        let cmaMatch = prefix.match(/,\s*(.*)$/);
+                                        if(cmaMatch && cmaMatch[1].trim()) pV = cmaMatch[1].trim();
+                                        else {
+                                            let numRange = prefix.match(/([\d\s\-]+)$/);
+                                            if (numRange) pV = numRange[1].trim();
+                                            else pV = prefix.split(/\s+/).pop();
+                                        }
                                     }
-                                }
-                                if(!pV) pV = prefix.split(/\s+/).pop();
-                            } else if (pmMatch) {
-                                pV = pmMatch[1];
-                            } else if (menorMatch) {
-                                let glued = menorMatch[1];
-                                let refDot = glued.indexOf('.');
-                                if(refDot !== -1 && refDot + 3 <= glued.length && (tName.includes('PEPTIDO') || tName.includes('PROCALCITONINA'))) {
-                                    pV = '< ' + glued.substring(refDot + 3);
-                                } else if (refDot !== -1 && tName.includes('PROTEINA')) {
-                                    pV = glued.substring(refDot + 2);
-                                } else {
-                                    pV = '< ' + glued.substring(Math.floor(glued.length / 2));
-                                }
-                            } else if (dashMatch) {
-                                let minStr = dashMatch[1];
-                                let rightStr = dashMatch[2];
-                                let minDecMatch = minStr.match(/\.(\d+)$/);
-                                
-                                if(minDecMatch) {
-                                    let decCount = minDecMatch[1].length;
-                                    let firstDotIdx = rightStr.indexOf('.');
-                                    if(firstDotIdx !== -1) {
-                                        let maxLen = firstDotIdx + 1 + decCount;
-                                        pV = rightStr.substring(maxLen);
-                                    } else { pV = rightStr; }
-                                } else {
-                                    if(tName.includes('PLAQUETAS') || tName.includes('TRIGLICERIDOS') || tName.includes('COLESTEROL') || tName.includes('HIERRO') || tName.includes('GLUCOSA') || tName.includes('ALCALINA') || tName.includes('LACTICA') || tName.includes('DEPURACION DE CREATININA')) {
-                                        pV = rightStr.substring(3);
-                                    } else if (tName === 'PO2') {
-                                        pV = rightStr.startsWith('108') ? rightStr.substring(3) : rightStr.substring(2);
-                                    } else if(tName.includes('UREA') || tName.includes('AMINOTRANSFERASA') || tName.includes('GAP') || tName.includes('FOSFORO') || tName.includes('MAGNESIO') || tName === 'PCO2') {
-                                        pV = rightStr.substring(2);
-                                    } else if(tName.includes('REACTIVA')) {
-                                        pV = rightStr.substring(1);
+                                    if(!pV) pV = prefix.split(/\s+/).pop();
+                                } else if (pmMatch) {
+                                    pV = pmMatch[1];
+                                } else if (menorMatch) {
+                                    let glued = menorMatch[1];
+                                    let refDot = glued.indexOf('.');
+                                    if(refDot !== -1 && refDot + 3 <= glued.length && (tName.includes('PEPTIDO') || tName.includes('PROCALCITONINA'))) {
+                                        pV = '< ' + glued.substring(refDot + 3);
+                                    } else if (refDot !== -1 && tName.includes('PROTEINA')) {
+                                        pV = glued.substring(refDot + 2);
                                     } else {
-                                        pV = rightStr.substring(Math.floor(rightStr.length / 2));
+                                        pV = '< ' + glued.substring(Math.floor(glued.length / 2));
                                     }
+                                } else if (dashMatch) {
+                                    let minStr = dashMatch[1];
+                                    let rightStr = dashMatch[2];
+                                    let minDecMatch = minStr.match(/\.(\d+)$/);
+                                    
+                                    if(minDecMatch) {
+                                        let decCount = minDecMatch[1].length;
+                                        let firstDotIdx = rightStr.indexOf('.');
+                                        if(firstDotIdx !== -1) {
+                                            let maxLen = firstDotIdx + 1 + decCount;
+                                            pV = rightStr.substring(maxLen);
+                                        } else { pV = rightStr; }
+                                    } else {
+                                        if(tName.includes('PLAQUETAS') || tName.includes('TRIGLICERIDOS') || tName.includes('COLESTEROL') || tName.includes('HIERRO') || tName.includes('GLUCOSA') || tName.includes('ALCALINA') || tName.includes('LACTICA') || tName.includes('DEPURACION DE CREATININA')) {
+                                            pV = rightStr.substring(3);
+                                        } else if (tName === 'PO2') {
+                                            pV = rightStr.startsWith('108') ? rightStr.substring(3) : rightStr.substring(2);
+                                        } else if(tName.includes('UREA') || tName.includes('AMINOTRANSFERASA') || tName.includes('GAP') || tName.includes('FOSFORO') || tName.includes('MAGNESIO') || tName === 'PCO2') {
+                                            pV = rightStr.substring(2);
+                                        } else if(tName.includes('REACTIVA')) {
+                                            pV = rightStr.substring(1);
+                                        } else {
+                                            pV = rightStr.substring(Math.floor(rightStr.length / 2));
+                                        }
+                                    }
+                                } else {
+                                    let lastNum = prefix.match(/([\-\+]?[\d\.]+)\s*%?$/);
+                                    if(lastNum) pV = lastNum[1];
                                 }
-                            } else {
-                                let lastNum = prefix.match(/([\-\+]?[\d\.]+)\s*%?$/);
-                                if(lastNum) pV = lastNum[1];
                             }
-                            
                             pV = pV.replace(/^\./, '0.');
                             let isAb = o.r.includes('▲') || o.r.includes('▼');
                             return { v: pV || prefix, rL: o.r, isAb: isAb, u: '', rMin: null, rMax: null };
-
                         } else {
                             let nx = o.c.charAt(tName.length); if(nx && /[A-Z]/.test(nx) && nx!=='+') continue;
                             let rOL = o.r.substring(f.k.length).replace(/^[:\-]/,'').trim();
@@ -443,7 +430,6 @@
                 return null;
             }
         };
-
         const RENDER = {
             toast: (m, c="text-green-400 dark:text-solar-green") => { const t=document.getElementById('toast'), tm=document.getElementById('toastMsg'), ti=document.getElementById('toastIcon'); tm.innerText=m; ti.className=`w-5 h-5 ${c}`; t.classList.remove('translate-y-20','opacity-0'); setTimeout(()=>t.classList.add('translate-y-20','opacity-0'),3000); },
             tags: () => {
@@ -489,7 +475,6 @@
                 bT.className = `px-2.5 py-1.5 rounded-lg text-sm border font-medium transition-colors shadow-sm ${STATE.showChart?'bg-indigo-600 dark:bg-solar-cyan text-white dark:text-solar-base03 border-indigo-700 dark:border-solar-cyan ring-2 ring-indigo-300 dark:ring-solar-base01':'bg-indigo-100 dark:bg-solar-base02 text-indigo-700 dark:text-solar-cyan border-indigo-200 dark:border-solar-base01 hover:bg-indigo-200 dark:hover:bg-solar-base01'}`;
             }
         };
-
         const APP = {
             init: () => { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => { STATE.isDark = e.matches; APP.applyTheme(); STORAGE.save(); }); },
             toggleTheme: () => { STATE.isDark = !STATE.isDark; APP.applyTheme(); STORAGE.save(); },
@@ -562,11 +547,9 @@
                         if(c.id!=='ID'&&c.id!=='Fec/hr') g.cats.add(c.id); if(c.id==='OTROS') g.hasO=true;
                     }); g.lns.push('');
                 });
-                
                 let svs = Object.values(map).map(g => ({ exp: g.exp, tHTML: g.tHTML, txt: g.lns.join('\n').trim(), cats: [...g.cats], txtR: (g.hasO?"OTROSLABS\n":"")+g.raw.join('\n\n') }));
                 if(STATE.editId !== null && svs.length === 1) { STATE.hist[STATE.editId] = svs[0]; RENDER.toast("Actualizado"); }
                 else { if(STATE.editId !== null) STATE.hist.splice(STATE.editId,1); STATE.hist.push(...svs); RENDER.toast(`Guardado (${svs.length})`); }
-                
                 // Cambiar a status 'Done' (verde) buscando por expediente o por nombre
                 STATE.reports.forEach(r => { 
                     let nInfo = r.data.find(c=>c.id==='ID')?.res[0]?.v || "";
@@ -574,7 +557,6 @@
                     let p = STATE.pts.find(x => (x.exp && x.exp === r.exp) || (x.name && x.name.length > 3 && pureName.includes(x.name))); 
                     if(p) p.status='done'; 
                 });
-                
                 APP.clearInput(); RENDER.tags(); RENDER.hist(); CHART.pop(); STORAGE.save();
             },
             editHist: i => { let it = STATE.hist[i]; if(!it.txtR) return RENDER.toast("Incompatible", "text-yellow-500"); document.getElementById('rawInput').value = it.txtR; STATE.editId = i; PARSER.run(it.txtR); RENDER.clasif(); APP.expandLeft('input'); CHART.pop(); CHART.render(); RENDER.toast("Modo Edición", "text-blue-500"); },
@@ -596,9 +578,7 @@
                 if(e) e.stopPropagation();
                 let ch = document.querySelectorAll('.hist-cb:checked');
                 if(!ch.length) return RENDER.toast("Selecciona reporte(s)", "text-yellow-500");
-                
                 const order = ['Leu','Hb','Htc','Plt','Neu','Linf','Urea','Alb','AU','BD','BI','BT','Glu','Cr','COLT','Ca','P','Na','K','Cl','Mg','DHL','FA','Glob','BUN','Prot','AST','ALT','GGT','Fe','FiO2','pH','pO2','pCO2','SO2','HCO3','BE','Cai','Lac','PCR','PCT','','VSG','IL6','FERR','PCII','TP','INR','TTP','FIB','TT','HbL','BNP','Tn','CPK','CKMB'];
-                
                 let selIdxs = [...ch].map(cb=>parseInt(cb.value)).sort((a,b)=>a-b);
                 let colsData = selIdxs.map(idx => {
                     let txt = STATE.hist[idx].txt;
@@ -614,7 +594,6 @@
                             }
                         }
                     });
-                    
                     // Fallbacks Inteligentes (Si el sérico está vacío, inyecta el de gasometría en la columna)
                     if(!map['Glu'] && map['GluG']) map['Glu'] = map['GluG'];
                     if(!map['Na'] && map['NaG']) map['Na'] = map['NaG'];
@@ -622,20 +601,16 @@
                     if(!map['Cl'] && map['ClG']) map['Cl'] = map['ClG'];
                     if(!map['Hb'] && map['HbG']) map['Hb'] = map['HbG'];
                     if(!map['Htc'] && map['HtcG']) map['Htc'] = map['HtcG'];
-                    
                     return map;
                 });
-                
                 let finalLines = order.map(a => {
                     if(!a) return colsData.map(c => '').join('\t');
                     return colsData.map(c => c[a] || '').join('\t');
                 });
-                
                 UTILS.cp(finalLines.join('\n'), `Copiado en Columna (${selIdxs.length})`);
             },
             clearSession: e => { if(e) e.stopPropagation(); if(confirm("¿Terminar turno y borrar datos?")) STORAGE.clear(); }
         };
-
         const CHART = {
             pop: () => {
                 const s = document.getElementById('chartLabSelect'); let map = {}, nms = {};
@@ -656,7 +631,6 @@
                 STATE.chartInst = new Chart(ctx, { type:'line', data:{datasets:[{label:ab, data:pts, borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,0.1)', borderWidth:2.5, pointBackgroundColor:'#2563eb', pointRadius:5, fill:false, tension:0.2}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false},title:{display:true,text:`Tendencia: ${ab} ${cU?'('+cU+')':''}`,color:tC},tooltip:{callbacks:{title:c=>c[0].raw.dL,label:c=>`${ab}: ${c.raw.y} ${cU}`}},annotation:{annotations:ann}}, scales:{x:{type:'linear',ticks:{color:tC,callback:v=>{let d=new Date(v); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}},grid:{color:gC}},y:{title:{display:true,text:cU||'Valor',color:tC},ticks:{color:tC},grid:{color:gC}}}} });
             }
         };
-
         const STORAGE = {
             save: () => localStorage.setItem('lab_sess', JSON.stringify({ pts: STATE.pts, hist: STATE.hist, mode: STATE.mode, isD: STATE.isDark, hC: STATE.highCrit, ts: Date.now() })),
             loadSession: () => {
@@ -669,7 +643,6 @@
             },
             clear: () => { localStorage.removeItem('lab_sess'); STATE.pts=[]; STATE.hist=[]; document.getElementById('gestorInput').value=''; RENDER.tags(); RENDER.hist(); RENDER.toast("Datos borrados", "text-blue-500 dark:text-solar-blue"); }
         };
-
         window.onload = () => { APP.init(); STORAGE.loadSession(); };
     </script>
 </body>
