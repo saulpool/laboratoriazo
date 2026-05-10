@@ -377,11 +377,11 @@
                                     let glued = menorMatch[1];
                                     let refDot = glued.indexOf('.');
                                     if(refDot !== -1 && refDot + 3 <= glued.length && (tName.includes('PEPTIDO') || tName.includes('PROCALCITONINA'))) {
-                                        pV = '< ' + glued.substring(refDot + 3);
+                                        pV = glued.substring(refDot + 3);
                                     } else if (refDot !== -1 && tName.includes('PROTEINA')) {
                                         pV = glued.substring(refDot + 2);
                                     } else {
-                                        pV = '< ' + glued.substring(Math.floor(glued.length / 2));
+                                        pV = glued.substring(Math.floor(glued.length / 2));
                                     }
                                 } else if (dashMatch) {
                                     let minStr = dashMatch[1];
